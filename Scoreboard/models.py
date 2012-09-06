@@ -6,9 +6,6 @@
 from django.db import models
 from django.contrib import admin
 
-class TeamMemberAdmin(admin.ModelAdmin):
-    list_display = ('name','nick')
-
 class TeamMember(models.Model):
     name = models.CharField(u'ФИО', max_length=50)
     nick = models.CharField(u'Никнейм', max_length=30, blank=True)
@@ -20,9 +17,6 @@ class TeamMember(models.Model):
     def __unicode__(self):
         return self.name
     
-class TeamAdmin(admin.ModelAdmin):
-    list_display = ('name','subnet','get_members_display')
-
 class Team(models.Model):
     name = models.CharField(u'Название команды', max_length=50)
     image = models.URLField(u'Иконка')
@@ -71,11 +65,7 @@ class Task(models.Model):
     
     def __unicode__(self):
         return u'%s-%s' % (self.category, self.score)
-    
-class ScoreAdmin(admin.ModelAdmin):
-    list_display = ('team','task')
-    
-    
+        
 class Score(models.Model):
     team = models.ForeignKey(Team)
     task = models.ForeignKey(Task,related_name='task')
@@ -86,11 +76,7 @@ class Score(models.Model):
     
     def __unicode__(self):
         return u'%s scores %s from %s' % (self.team, self.task.score, self.task)
-    
-class FlagAdmin(admin.ModelAdmin):
-    list_display = ('task','flag')
-    
-    
+        
 class Flag(models.Model):
     task = models.ForeignKey(Task)
     flag = models.CharField(u'Флаг',max_length=20)
