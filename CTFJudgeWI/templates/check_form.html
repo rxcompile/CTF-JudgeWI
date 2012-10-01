@@ -1,0 +1,21 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+        "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+    <title>Check flag</title>
+</head>
+<body>
+    <form>
+        {% if errors %}
+            {% for error in errors %}
+                {{ error }}<br/>
+            {%endfor %}
+        {% endif %}
+        {% if accepted %}
+            Флаг верный!<br/>
+        {% endif %}
+        Flag: <input name="q" type="text"> <br/>
+        <input type="submit" value="Отправить">
+    </form>
+</body>
+</html>
