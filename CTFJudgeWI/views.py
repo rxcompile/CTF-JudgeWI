@@ -12,7 +12,7 @@ def check_flag(request):
         else:
             try:
                 Flag.objects.get(flag=q)
-                accepted = True
+                accepted = True //добавить в базу флаг к команде
             except Flag.DoesNotExist:
                 errors.append(u'Неверный флаг.')
     return render_to_response('check_form.html', {'accepted': accepted, 'errors': errors})
