@@ -3,6 +3,7 @@ Created on 06.09.2012
 
 @author: rxcompile
 '''
+# служебная информация для админки
 from django.contrib import admin
 from Scoreboard.models import Team, Category,Task, Score, Flag, TeamMember
 
