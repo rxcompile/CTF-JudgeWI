@@ -1,0 +1,6 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h3>{{ task.category }}{{ task.score }}</h3>
+    Описание: {% autoescape off %}{{ task.description }}{% endautoescape %}
+{% endblock %}
