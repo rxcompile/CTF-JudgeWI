@@ -57,7 +57,8 @@ SCORE_CHOICES = (
 class Task(models.Model):
     category = models.ForeignKey(Category)
     description = models.TextField(u'Описание')
-    score = models.PositiveSmallIntegerField(u'Очки',choices=SCORE_CHOICES)
+    score = models.PositiveSmallIntegerField(u'Очки', choices=SCORE_CHOICES)
+    visible = models.BooleanField(u'Видимость', default=False)
     
     class Meta:
         verbose_name_plural = u"Задания"
