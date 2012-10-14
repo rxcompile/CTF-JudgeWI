@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+
+{% block title %}Команда{% endblock %}
+
+{% block scripts %}
+<script>
+function checktask(task_id)
+{
+	$.ajax({
+		url: '/tsk',
+		data: {'task_id' : task_id }
+		})
+  		.done(function(data) { 
+  			$('#overlay #content').empty();
+  			$('#overlay #content').append(data.task);
+  			$('#overlay #task_id').val(task_id);
+  			$('#overlay #flag').val("");
+  			$.ajax({
+				url: '/chk',
+				data: {'task_id' : task_id, 'flag' : 'null' }
+				})
+  				.done(function(data) {
+  					if(!data.status)
+  						$('#overlay #farm').addClass('visible');
+  					else
+  						$('#overlay #farm').removeClass('visible');
+  					$('#overlay').addClass('visible');
+  				})
+    			.fail(function() { 
+    				alert("error"); 
+    			});
+  			})
+    	.fail(function() { 
+    		$('#overlay').removeClass('visible');
+    		alert("error");
+    		});
+}
+
+function sendflag(task_id, flag)
+{
+	$.ajax({
+		url: '/chk',
+		data: {'task_id' : task_id, 'flag' : flag }
+		})
+  		.done(function(data) { 
+  			$('#overlay #flag').val(data.status);
+  			})
+    	.fail(function() { 
+    		alert("error"); 
+    		});
+}
+
+function closeOverlay()
+{
+	$('#overlay').removeClass('visible');
+	$('#overlay #flag').val("");
+}
+</script>
+{% endblock %} 
+{% block content %}
+<div id="overlay" class="overlayclass">
+<div class="notifblock">
+	<div id="content"></div>
+	<div id="farm" class="frm">
+	<form>
+	<input type="hidden" value="" id="task_id">
+	<input type="text" id="flag">
+	<input type="button" onclick="sendflag($('#overlay #task_id').val(), $('#overlay #flag').val())" value="Отправить">
+	</form>
+	</div>
+	<input type="button" value="X" onclick="closeOverlay()">
+</div>
+</div>
+Scoreboard for {{team.name}} <br/>
+U came from {{user_address}}<br/>
+Your access is {{access}}<br/>
+<table>
+<tr>
+{% for d in data%}
+	<td>{{d.cat.name}}</td>
+{% endfor %}
+</tr>
+<tr>
+{% for d in data%}
+	<td>
+	<div class="grid">
+	{% for task in d.tasks %}
+	<div class="task">
+		{% if access %}
+		<a href="#" onclick="checktask({{task.id}})">{{task}}</a>
+		{% else %}
+		{{task}}
+		{% endif %}
+		
+	</div>	
+	{% endfor %}
+	</div>
+	</td>
+{% endfor %}
+</tr>
+</table>
+{% endblock %}

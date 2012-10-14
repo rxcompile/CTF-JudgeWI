@@ -19,7 +19,8 @@ class TeamMember(models.Model):
 class Team(models.Model):
     name = models.CharField(u'Название команды', max_length=50)
     image = models.URLField(u'Иконка')
-    subnet = models.IPAddressField(u'Подсеть', blank=True)
+    subnet = models.CharField(u'Подсеть', blank=True, max_length=18)
+    
     members = models.ManyToManyField(TeamMember)
     
     class Meta:
@@ -79,14 +80,14 @@ class Score(models.Model):
         
 class FlagLog(models.Model):
     team = models.ForeignKey(Team)
-    task = models.CharField(u'Флаг')
+    flag = models.CharField(u'Флаг',max_length=20)
     
     class Meta:
         verbose_name_plural = u"Отправленные флаги"
         verbose_name = u"Отправленный флаг"
     
     def __unicode__(self):
-        return u'%s send %s' % (self.team, self.task)
+        return u'%s send %s' % (self.team, self.flag)
     
     
 class Flag(models.Model):
