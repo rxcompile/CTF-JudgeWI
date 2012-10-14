@@ -4,7 +4,6 @@
 '''
 
 from django.db import models
-from django.contrib import admin
 
 class TeamMember(models.Model):
     name = models.CharField(u'ФИО', max_length=50)
@@ -58,6 +57,7 @@ class Task(models.Model):
     category = models.ForeignKey(Category)
     description = models.TextField(u'Описание')
     score = models.PositiveSmallIntegerField(u'Очки',choices=SCORE_CHOICES)
+    visible = models.BooleanField(u'Открыт')
     
     class Meta:
         verbose_name_plural = u"Задания"
@@ -77,6 +77,18 @@ class Score(models.Model):
     def __unicode__(self):
         return u'%s scores %s from %s' % (self.team, self.task.score, self.task)
         
+class FlagLog(models.Model):
+    team = models.ForeignKey(Team)
+    task = models.CharField(u'Флаг')
+    
+    class Meta:
+        verbose_name_plural = u"Отправленные флаги"
+        verbose_name = u"Отправленный флаг"
+    
+    def __unicode__(self):
+        return u'%s send %s' % (self.team, self.task)
+    
+    
 class Flag(models.Model):
     task = models.ForeignKey(Task)
     flag = models.CharField(u'Флаг',max_length=20)
