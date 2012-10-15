@@ -4,7 +4,6 @@
 '''
 
 from django.db import models
-from django.contrib import admin
 
 class TeamMember(models.Model):
     name = models.CharField(u'ФИО', max_length=50)
@@ -20,7 +19,8 @@ class TeamMember(models.Model):
 class Team(models.Model):
     name = models.CharField(u'Название команды', max_length=50)
     image = models.URLField(u'Иконка')
-    subnet = models.IPAddressField(u'Подсеть', blank=True)
+    subnet = models.CharField(u'Подсеть', blank=True, max_length=18)
+    
     members = models.ManyToManyField(TeamMember)
     
     class Meta:
@@ -57,8 +57,8 @@ SCORE_CHOICES = (
 class Task(models.Model):
     category = models.ForeignKey(Category)
     description = models.TextField(u'Описание')
-    score = models.PositiveSmallIntegerField(u'Очки', choices=SCORE_CHOICES)
-    visible = models.BooleanField(u'Видимость', default=False)
+    score = models.PositiveSmallIntegerField(u'Очки',choices=SCORE_CHOICES)
+    visible = models.BooleanField(u'Открыт')
     
     class Meta:
         verbose_name_plural = u"Задания"
@@ -78,6 +78,18 @@ class Score(models.Model):
     def __unicode__(self):
         return u'%s scores %s from %s' % (self.team, self.task.score, self.task)
         
+class FlagLog(models.Model):
+    team = models.ForeignKey(Team)
+    flag = models.CharField(u'Флаг',max_length=20)
+    
+    class Meta:
+        verbose_name_plural = u"Отправленные флаги"
+        verbose_name = u"Отправленный флаг"
+    
+    def __unicode__(self):
+        return u'%s send %s' % (self.team, self.flag)
+    
+    
 class Flag(models.Model):
     task = models.ForeignKey(Task)
     flag = models.CharField(u'Флаг',max_length=20)

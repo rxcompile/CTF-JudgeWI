@@ -5,7 +5,7 @@ Created on 06.09.2012
 '''
 # служебная информация для админки
 from django.contrib import admin
-from Scoreboard.models import Team, Category,Task, Score, Flag, TeamMember
+from Scoreboard.models import Team, Category,Task, Score, Flag, FlagLog, TeamMember
 
 
 class TeamMemberAdmin(admin.ModelAdmin):
@@ -25,4 +25,5 @@ admin.site.register(Category)
 admin.site.register(Task)
 admin.site.register(Score,ScoreAdmin)
 admin.site.register(Flag,FlagAdmin)
+admin.site.register(FlagLog)
 admin.site.register(TeamMember,TeamMemberAdmin)
