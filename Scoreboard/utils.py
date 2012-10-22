@@ -26,8 +26,8 @@ def get_team(client_ip):
 
 def isSolveTask(team, task):
 	try:
-		Score.objects.get(team=team, task=task)
-        return True
+        Score.objects.get(team=team, task=task)
+		return True
 	except:
 		return False
 
