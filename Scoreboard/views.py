@@ -4,7 +4,7 @@ from ipaddr import IPAddress, IPNetwork
 from django.shortcuts import render_to_response
 from django.http import HttpResponse, HttpResponseNotAllowed,\
     HttpResponseNotFound
-import simplejson as json
+import django.utils.simplejson as json
 from django.db.models.aggregates import Sum
 
 def addressInNetwork(ip,net):
@@ -93,11 +93,14 @@ def team(request, team_id):
     my_team = get_team(client_ip)
     team = Team.objects.get(id=team_id)
     categories = Category.objects.all()
+    teams = Team.objects.all()
     scores = Score.objects.filter(team=team)
     
     access_tasks = my_team is not None and team.id == my_team.id
     
     tasks = Task.objects.filter(visible=True)
+	
+    dteams = [{'team' : t} for t in teams]
     
     data = [ {'cat' :cat,
               'tasks' : tasks.filter(category=cat)} for cat in categories]
@@ -107,6 +110,7 @@ def team(request, team_id):
     
     return render_to_response('team.html',
                               {'team' : team, 
+                               'teams' : dteams,
                                'data' : data,
                                'user_address' : get_ip(request),
                                'access' : access_tasks

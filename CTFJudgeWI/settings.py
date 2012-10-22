@@ -12,7 +12,7 @@ MANAGERS = ADMINS
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
-        'NAME': '/home/rxdesu/git/CTF-JudgeWI/djangodev.db',                      # Or path to database file if using sqlite3.
+        'NAME': 'D:/repo/checker/djangodev.db',                      # Or path to database file if using sqlite3.
         'USER': '',                      # Not used with sqlite3.
         'PASSWORD': '',                  # Not used with sqlite3.
         'HOST': '',                      # Set to empty string for localhost. Not used with sqlite3.
@@ -95,6 +95,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.messages.middleware.MessageMiddleware',
     # Uncomment the next line for simple clickjacking protection:
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+	'django.contrib.flatpages.middleware.FlatpageFallbackMiddleware',	#Gypnocat
 )
 
 ROOT_URLCONF = 'CTFJudgeWI.urls'
@@ -120,6 +121,7 @@ INSTALLED_APPS = (
     # Uncomment the next line to enable admin documentation:
     # 'django.contrib.admindocs',
     'Scoreboard',
+	'django.contrib.flatpages',		#Gypnocat
 )
 
 # A sample logging configuration. The only tangible logging

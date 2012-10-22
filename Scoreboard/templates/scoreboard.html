@@ -1,32 +1,45 @@
 {% extends "base.html" %}
 
-{% block title %}Доска почета{% endblock %}
+{% block hightitle %}
+	Турнирная таблица
+{% endblock %}
 
+{% block title %}
+	Турнирная таблица
+{% endblock %}
+
+{% block searchblock %}
+	{% if team %}
+		<h2>Мы следим за вами</h2>
+		Добро пожаловать, {{team.name}} <br/>
+		IP-адрес: {{user_address}} <br/>
+	{% endif %}
+{% endblock %}
+		
 {% block content %}
-<h1>Scoreboard</h1>
-
-{% if team %}
-Hello, {{team.name}} <br/>
-{% endif %}
-U came from {{user_address}}<br/>
-
-<table>
-<tr>
-	<td>Команда</td>
-	{% for c in categories %}
-	<td>{{c.name}}</td>
+	<h1>Турнирная таблица</h1>
+	<table width="750" height="100">
+	<tr>
+		<td>Команда</td>
+		{% for c in categories %}
+		<td>{{c.name}}</td>
+		{% endfor %}
+		<td>Общий счет</td>
+	</tr>
+	{% for t in data %}
+	<tr>
+		<td><a href={% url team team_id=t.team.id %}>{{ t.team.name }}</a></td>
+		{% for value in t.category %}
+		<td>{{ value }}</td>
+		{% endfor %}
+		<td>{{ t.total_score }}</td>
+	</tr>
 	{% endfor %}
-	<td>Общий счет</td>
-</tr>
-{% for t in data %}
-<tr>
-	<td><a href={% url team team_id=t.team.id %}>{{ t.team.name }}</a></td>
-	{% for value in t.category %}
-	<td>{{ value }}</td>
-	{% endfor %}
-	<td>{{ t.total_score }}</td>
-</tr>
-{% endfor %}
-</table>
-
+	</table>
+{% endblock %}
+{% block footerinfo %}
+	<a href="/">To Scoreboard</a> |
+	{% for t in data %}
+		<a href={% url team team_id=t.team.id %}>{{ t.team.name }}</a> |
+	{% endfor %} Design by Ctrl-PNZ | Fucking Django
 {% endblock %}

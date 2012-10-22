@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}Турнирная таблица{% endblock %}
+{% block content %}
+<h1>Турнирная таблица</h1>
+{% if team %}
+Hello, {{team.name}} <br/>
+{% endif %}
+U came from {{user_address}}<br/>
+<table>
+<tr>
+	<td>Команда</td>
+	{% for c in categories %}
+	<td>{{c.name}}</td>
+	{% endfor %}
+	<td>Общий счет</td>
+</tr>
+{% for t in data %}
+<tr>
+	<td><a href={% url team team_id=t.team.id %}>{{ t.team.name }}</a></td>
+	{% for value in t.category %}
+	<td>{{ value }}</td>
+	{% endfor %}
+	<td>{{ t.total_score }}</td>
+</tr>
+{% endfor %}
+</table>
+
+{% endblock %}

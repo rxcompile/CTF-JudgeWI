@@ -1,6 +1,50 @@
 {% extends "base.html" %}
-
-{% block title %}Команда{% endblock %}
+{% block hightitle %}
+	Команда: {{team.name}}
+{% endblock %}
+{% block title %}
+	Команда: {{team.name}}
+{% endblock %}
+{% block content %}
+	<div id="overlay" class="overlayclass">
+		<div class="notifblock">
+			<div id="content"></div>
+			<div id="farm" class="frm">
+				<form>
+					<input type="hidden" value="" id="task_id">
+					<input type="text" id="flag">
+					<input type="button" onclick="sendflag($('#overlay #task_id').val(), $('#overlay #flag').val())" value="Отправить">
+				</form>
+			</div>
+			<input type="button" value="X" onclick="closeOverlay()">
+		</div>
+	</div>
+	
+	<table>
+		<tr>
+			{% for d in data%}
+			<td>{{d.cat.name}}</td>
+			{% endfor %}
+		</tr>
+		<tr>
+			{% for d in data%}
+				<td>
+				<div class="grid">
+				{% for task in d.tasks %}
+					<div class="task">
+					{% if access %}
+						<a href="#" onclick="checktask({{task.id}})">{{task}}</a>
+					{% else %}
+						{{task}}
+					{% endif %}
+					</div>	
+				{% endfor %}
+				</div>
+				</td>
+			{% endfor %}
+		</tr>
+	</table>
+{% endblock %}
 
 {% block scripts %}
 <script>
@@ -57,46 +101,10 @@ function closeOverlay()
 }
 </script>
 {% endblock %} 
-{% block content %}
-<div id="overlay" class="overlayclass">
-<div class="notifblock">
-	<div id="content"></div>
-	<div id="farm" class="frm">
-	<form>
-	<input type="hidden" value="" id="task_id">
-	<input type="text" id="flag">
-	<input type="button" onclick="sendflag($('#overlay #task_id').val(), $('#overlay #flag').val())" value="Отправить">
-	</form>
-	</div>
-	<input type="button" value="X" onclick="closeOverlay()">
-</div>
-</div>
-Scoreboard for {{team.name}} <br/>
-U came from {{user_address}}<br/>
-Your access is {{access}}<br/>
-<table>
-<tr>
-{% for d in data%}
-	<td>{{d.cat.name}}</td>
-{% endfor %}
-</tr>
-<tr>
-{% for d in data%}
-	<td>
-	<div class="grid">
-	{% for task in d.tasks %}
-	<div class="task">
-		{% if access %}
-		<a href="#" onclick="checktask({{task.id}})">{{task}}</a>
-		{% else %}
-		{{task}}
-		{% endif %}
-		
-	</div>	
-	{% endfor %}
-	</div>
-	</td>
-{% endfor %}
-</tr>
-</table>
+
+{% block footerinfo %}
+	<a href="/">To Scoreboard</a> |
+	{% for t in teams %}
+		<a href={% url team team_id=t.team.id %}>{{ t.team.name }}</a> |
+	{% endfor %} Design by Ctrl-PNZ | Fucking Django
 {% endblock %}
