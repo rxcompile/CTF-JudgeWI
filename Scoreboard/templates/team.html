@@ -59,20 +59,12 @@ function checktask(task_id)
   			$('#overlay #content').append(data.task);
   			$('#overlay #task_id').val(task_id);
   			$('#overlay #flag').val("");
-  			$.ajax({
-				url: '/chk',
-				data: {'task_id' : task_id, 'flag' : 'null' }
-				})
-  				.done(function(data) {
-  					if(!data.status)
-  						$('#overlay #farm').addClass('visible');
-  					else
-  						$('#overlay #farm').removeClass('visible');
-  					$('#overlay').addClass('visible');
-  				})
-    			.fail(function() { 
-    				alert("error"); 
-    			});
+
+			if(!data.status)
+				$('#overlay #farm').addClass('visible');
+			else
+				$('#overlay #farm').removeClass('visible');
+			$('#overlay').addClass('visible');
   			})
     	.fail(function() { 
     		$('#overlay').removeClass('visible');
