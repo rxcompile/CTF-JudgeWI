@@ -25,21 +25,20 @@ def get_team(client_ip):
     return None
 
 def isSolveTask(team, task):
-	try:
+    try:
         Score.objects.get(team=team, task=task)
         return True
-	except:
+    except:
         return False
 
 def check_flag(team, task, sended_flag):
     log = FlagLog.objects.create(flag=sended_flag, team=team)
     log.save()
     try:
-        if !isSolveTask(team,task):
+        if not isSolveTask(team,task):
             Flag.objects.get(flag=sended_flag, task=task)
             score = Score.objects.create(team=team, task=task)
             score.save()
             return True
     except:
         return False
-    

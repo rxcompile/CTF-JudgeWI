@@ -5,18 +5,18 @@ from django.http import HttpResponse, HttpResponseNotAllowed,\
     HttpResponseNotFound
 from django.db.models.aggregates import Sum
 import django.utils.simplejson as json
-import Scoreboard.utils
+from Scoreboard.utils import *
 
 def send_check_flag(request):
     if not request.is_ajax():
         return HttpResponseNotAllowed('Ajax')
-    
+
     task_id = request.GET.get('task_id')
     team = get_team(get_ip(request))
     sended_flag = request.GET.get('flag')
     
     task = Task.objects.get(id=task_id)
-	result = check_flag(team,task,sended_flag)
+    result = check_flag(team,task,sended_flag)
     jsonDict = { "status": result }
     return HttpResponse( json.dumps( jsonDict ), mimetype="application/json" )
 
@@ -24,7 +24,7 @@ def task_info(request):
     if not request.is_ajax():
         return HttpResponseNotAllowed('Ajax')
     task_id = request.GET.get('task_id')
-	team = get_team(get_ip(request))
+    team = get_team(get_ip(request))
     task = Task.objects.get(id=task_id)
     jsonDict = {'task' : task.description, 'score' : task.score, 'status' : isSolveTask(team,task) }
     return HttpResponse( json.dumps( jsonDict ), mimetype="application/json" )
@@ -63,7 +63,7 @@ def team(request, team_id):
     access_tasks = my_team is not None and team.id == my_team.id
     
     tasks = Task.objects.filter(visible=True)
-	
+
     dteams = [{'team' : t} for t in teams]
     
     data = [ {'cat' :cat,
@@ -71,7 +71,7 @@ def team(request, team_id):
         
     if team is None:
         return HttpResponseNotFound()
-    
+
     return render_to_response('team.html',
                               {'team' : team, 
                                'teams' : dteams,
