@@ -78,4 +78,4 @@ def team(request, team_id):
                                'data' : data,
                                'user_address' : get_ip(request),
                                'access' : access_tasks
-                               })
+                               })						   

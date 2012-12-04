@@ -1,11 +1,58 @@
-{% extends "base.html" %}
+﻿{% extends "base.html" %}
+
 {% block hightitle %}
-	Команда: {{team.name}}
+	Задания команды {{team.name}}
 {% endblock %}
+
 {% block title %}
-	Команда: {{team.name}}
+	Задания команды {{team.name}}
 {% endblock %}
+
+{% block redirect %}
+	"/"
+{% endblock %}
+
+{% block name_redirect_page %}
+	Очки, набранные командами
+{% endblock %}
+
 {% block content %}
+	<table border=5 cellpadding=0 cellspacing=1 id="hor-zebra>
+		<thead>
+			<tr class="header">
+			{% for c in categories %}
+            <th class="tasks">{{c.name}}</th>
+			{% endfor %}
+			</tr>
+		</thead>
+		<tbody>		
+			<tr class="tasks">
+				{% for d in data%}
+				<td>{{d.cat.name}}</td>
+				{% endfor %}
+			</tr>		
+			
+			<tr>
+				{% for d in data%}
+					<td>
+					<div class="grid">
+						{% for task in d.tasks %}
+						<div class="task">
+							{% if access %}
+								<a href="#" onclick="checktask({{task.id}})">{{task}}</a>
+							{% else %}
+								{{task}}
+							{% endif %}
+						</div>							
+						{% endfor %}
+					</div>	
+					</td>
+				{% endfor %}
+			</tr>
+		</tbody>
+	</table>
+
+	<!--
 	<div id="overlay" class="overlayclass">
 		<div class="notifblock">
 			<div id="content"></div>
@@ -18,34 +65,9 @@
 			</div>
 			<input type="button" value="X" onclick="closeOverlay()">
 		</div>
-	</div>
-	
-	<table>
-		<tr>
-			{% for d in data%}
-			<td>{{d.cat.name}}</td>
-			{% endfor %}
-		</tr>
-		<tr>
-			{% for d in data%}
-				<td>
-				<div class="grid">
-				{% for task in d.tasks %}
-					<div class="task">
-					{% if access %}
-						<a href="#" onclick="checktask({{task.id}})">{{task}}</a>
-					{% else %}
-						{{task}}
-					{% endif %}
-					</div>	
-				{% endfor %}
-				</div>
-				</td>
-			{% endfor %}
-		</tr>
-	</table>
+	</div> -->
 {% endblock %}
-
+<!--
 {% block scripts %}
 <script>
 function checktask(task_id)
@@ -59,12 +81,20 @@ function checktask(task_id)
   			$('#overlay #content').append(data.task);
   			$('#overlay #task_id').val(task_id);
   			$('#overlay #flag').val("");
-
-			if(!data.status)
-				$('#overlay #farm').addClass('visible');
-			else
-				$('#overlay #farm').removeClass('visible');
-			$('#overlay').addClass('visible');
+  			$.ajax({
+				url: '/chk',
+				data: {'task_id' : task_id, 'flag' : 'null' }
+				})
+  				.done(function(data) {
+  					if(!data.status)
+  						$('#overlay #farm').addClass('visible');
+  					else
+  						$('#overlay #farm').removeClass('visible');
+  					$('#overlay').addClass('visible');
+  				})
+    			.fail(function() { 
+    				alert("error"); 
+    			});
   			})
     	.fail(function() { 
     		$('#overlay').removeClass('visible');
@@ -93,10 +123,4 @@ function closeOverlay()
 }
 </script>
 {% endblock %} 
-
-{% block footerinfo %}
-	<a href="/">To Scoreboard</a> |
-	{% for t in teams %}
-		<a href={% url team team_id=t.team.id %}>{{ t.team.name }}</a> |
-	{% endfor %} Design by Ctrl-PNZ | Fucking Django
-{% endblock %}
+-->
