@@ -46,8 +46,13 @@ def scores(request):
              'category' : [ int( scores.filter(team=t, task__isnull=False, task__category=c).aggregate(s=Sum('task__score'))['s'] or 0 )
                              for c in categories]
              } for t in teams].sort(key=lambda x: x['total_score'])
+<<<<<<< HEAD
     for (i, d) in enumerate(data):
 		d['place'] = i+1
+=======
+    for i, d in data:
+        d['place'] = i
+>>>>>>> 2dabe08212d3d5493f63cd2ed94415cee19b1f97
     
     return HttpResponse(json.dumps(data), mimetype="application/json")
 
@@ -62,8 +67,13 @@ def places(request):
     data = [{'id' : t.id,
              'total_score' : int( scores.filter(team=t).aggregate(sum=Sum('task__score'))['sum'] or 0 )
              } for t in teams].sort(key=lambda x: x['total_score'])
+<<<<<<< HEAD
     for (i, d) in enumerate(data):
 		d['place'] = i+1
+=======
+    for i, d in data:
+        d['place'] = i
+>>>>>>> 2dabe08212d3d5493f63cd2ed94415cee19b1f97
     
     return HttpResponse(json.dumps(data), mimetype="application/json")
 
@@ -82,10 +92,14 @@ def scoreboard(request):
              'total_score' : int( scores.filter(team=t).aggregate(s=Sum('task__score'))['s'] or 0 ),
              'category' : [ int( scores.filter(team=t, task__isnull=False, task__category=c).aggregate(s=Sum('task__score'))['s'] or 0 )
                              for c in categories]
+<<<<<<< HEAD
              } for t in teams]
     data.sort(key=lambda x: x['total_score'],reverse=True)
     for (i, d) in enumerate(data):
 		d['place'] = i+1
+=======
+             } for t in teams].sort(key=lambda x: x['total_score'])
+>>>>>>> 2dabe08212d3d5493f63cd2ed94415cee19b1f97
     
     return render_to_response('scoreboard.html',
                               {'team' : team, 
@@ -123,11 +137,19 @@ def team(request, team_id):
                                'data' : data,
                                'user_address' : get_ip(request),
                                'access' : access_tasks
+<<<<<<< HEAD
                                },
 							   mimetype="application/xhtml+xml")
+=======
+                               })
+>>>>>>> 2dabe08212d3d5493f63cd2ed94415cee19b1f97
 
 #Try to show my team only
 def myteam(request):
     client_ip = get_ip(request)
     team = get_team(client_ip)
+<<<<<<< HEAD
     return team(request, team.id)
+=======
+    return team(request, team.id)
+>>>>>>> 2dabe08212d3d5493f63cd2ed94415cee19b1f97
