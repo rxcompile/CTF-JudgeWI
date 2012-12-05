@@ -1,5 +1,5 @@
 from ipaddr import IPAddress, IPNetwork
-from Scoreboard.models import Team, Flag, FlagLog, Task, Score, Category
+from Scoreboard.models import *
 
 def addressInNetwork(ip,net):
     user_ip = IPAddress(ip)

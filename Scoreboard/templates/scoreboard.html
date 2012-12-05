@@ -1,5 +1,4 @@
-﻿<!--Разметка для лого не более 45х45 -->
-{% extends "base.html" %}
+﻿{% extends "base.html" %}
 
 {% block hightitle %}
 	Очки, набранные командами
@@ -10,7 +9,7 @@
 {% endblock %}
 
 {% block redirect %}
-	"/"
+	"{% url team team_id=team.id %}"
 {% endblock %}
 
 {% block name_redirect_page %}
@@ -18,7 +17,7 @@
 {% endblock %}
 		
 {% block content %}
-<table border=5 cellpadding=0 cellspacing=1 id="hor-zebra">
+<table border="5" cellpadding="0" cellspacing="1" id="hor-zebra">
     <thead>
     	<tr class="header">
 			<th>#</th>
@@ -31,54 +30,26 @@
         </tr>
     </thead>
 	
-    <tbody>
+    <tbody>		
+		{% for t in data %}
+		{% if forloop.counter0 == 0 %}
 		<tr class="first">
-			<td class="first">1</td>
-			<td class="first">1</td>
-			<td class="first">1 </td>
-			<td class="first">1</td>
-			<td class="first">1</td>
-			<td class="first">1</td>
-			<td class="first">1</td>
-			<td class="first">1</td>
-			<td class="first">1</td>
-			<td class="first">1</td>
-		</tr>	
+		{% elif forloop.counter0 == 1%}
 		<tr class="second">
-			<td class="second">2</td>
-			<td class="second">2</td>
-			<td class="second">2</td>
-			<td class="second">2</td>
-			<td class="second">2</td>
-			<td class="second">2</td>
-			<td class="second">2</td>
-			<td class="second">2</td>
-			<td class="second">2</td>
-			<td class="second">2</td>
-		</tr>
+		{% elif forloop.counter0 == 2%}
 		<tr class="third">
-			<td class="third">3</td>
-			<td class="third">3</td>
-			<td class="third">3</td>
-			<td class="third">3</td>
-			<td class="third">3</td>
-			<td class="third">3</td>
-			<td class="third">3</td>
-			<td class="third">3</td>
-			<td class="third">3</td>
-			<td class="third">3</td>
-		</tr>
-		{% for t in data %}		
+		{% else %}
     	<tr class="other">
-			<td></td>
-        	<td><a href={% url team team_id=t.team.id %}>{{ t.team.name }}</a></td>
-			<td></td>
+		{% endif %}
+			<td>{{t.place}}</td>
+        	<td><a href="{% url team team_id=t.team.id %}">{{ t.team.name }}</a></td>
+			<td class ="logo"><img src="{{t.team.image}}" class ="images"></img></td>
             {% for value in t.category %}
 			<td>{{ value }}</td>
 			{% endfor %}
 			<td>{{ t.total_score }}</td>
-			{% endfor %}       
-		</tr>	
+		</tr>
+		{% endfor %}       
     </tbody>
 </table>
 {% endblock %}
