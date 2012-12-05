@@ -18,8 +18,8 @@ class TeamMember(models.Model):
     
 class Team(models.Model):
     name = models.CharField(u'Название команды', max_length=50)
-    image = models.URLField(u'Иконка')
-    subnet = models.CharField(u'Подсеть', blank=True, max_length=18)
+    image = models.URLField(u'Иконка', blank=True)
+    subnet = models.CharField(u'Подсеть', max_length=18)
     
     members = models.ManyToManyField(TeamMember)
     
