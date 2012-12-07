@@ -16,6 +16,7 @@ urlpatterns = patterns('',
     url(r'^chk$', 'Scoreboard.views.send_check_flag'),
     url(r'^scores$', 'Scoreboard.views.scores'),
     url(r'^places$', 'Scoreboard.views.places'),
+	url(r'^tasks$', 'Scoreboard.views.tasks'),
     # Uncomment the admin/doc line below to enable admin documentation:
     # url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
     # Uncomment the next line to enable the admin:

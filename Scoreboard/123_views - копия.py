@@ -8,21 +8,6 @@ from Scoreboard.utils import *
 from Scoreboard.models import *
 
 #Ajax stuff
-def tasks(request):
-	#if not request.is_ajax():
-	#	return HttpResponseNotAllowed('Ajax')
-	team_id = request.GET.get('team_id')
-	team = Team.objects.get(id=team_id)
-	categories = Category.objects.all()
-	scores = Score.objects.filter(team=team).values()
-	tasks = Task.objects.filter(visible=True)
-	
-	data = [ {'cat': str(cat),
-			  'tasks' : [ {'task': str(task), 'issolved' : contains(scores, lambda x: x['task_id'] == task.id)} 
-			  for task in tasks.filter(category=cat)]} for cat in categories]
-
-	return HttpResponse(json.dumps(data), mimetype="application/json")
-
 #Checks for allready sended flag, if not - create one
 def send_check_flag(request):
     if not request.is_ajax():
@@ -114,12 +99,6 @@ def scoreboard(request):
 							   #context_instance=RequestContext(request),
 							   mimetype="application/xhtml+xml")
 
-def contains(list, filter):
-    for x in list:
-        if filter(x):
-            return True
-    return False
-	
 #View team stats
 def team(request, team_id):
     client_ip = get_ip(request)
@@ -127,18 +106,16 @@ def team(request, team_id):
     team = Team.objects.get(id=team_id)
     categories = Category.objects.all()
     teams = Team.objects.all()
-    scores = Score.objects.filter(team=team).values()
+    scores = Score.objects.filter(team=team)
     
     access_tasks = my_team is not None and team.id == my_team.id
     
     tasks = Task.objects.filter(visible=True)
 
     dteams = [{'team' : t} for t in teams]
-	
     
-    data = [ {'cat': cat,
-              'tasks' : [ {'task': task, 'issolved' : contains(scores, lambda x: x['task_id'] == task.id)} 
-			  for task in tasks.filter(category=cat)]} for cat in categories]
+    data = [ {'cat' :cat,
+              'tasks' : [{'task' : task, 'issolved': scores['task']} for task in tasks.filter(category=cat)]} for cat in categories]
         
     if team is None:
         return HttpResponseNotFound()
