@@ -116,7 +116,7 @@ function updategrid()
 		}).
 		done(function(data) {
 			$("#hor-zebra").empty();
-			$("#hor-zebra").append(generategrid(data));
+			$("#hor-zebra").html(generategrid(data));
 		}).
 		fail(function() {
 			alert("error");
@@ -129,22 +129,22 @@ function generategrid(data)
 	alert("generategrid");
 	for( var t in data)
 	{
-		ret += "&lt;tr&gt;&lt;td&gt;";
+		ret += "<tr><td>";
 		ret += t.cat;
-		ret += "&lt;/td&gt;";
+		ret += "</td>";
 		for(var tdict in t.tasks)
 		{
 			if(tdict.issolved)
 			{
-				ret += "&lt;td&gt;" + tdict.task.name;
+				ret += "<td>;" + tdict.task.name;
 			}
 			else
 			{
-				ret += "&lt;td&gt;" + tdict.task.name;
+				ret += "<td>" + tdict.task.name;
 			}
-			ret += "&lt;/td&gt;";
+			ret += "</td>";
 		}
-		ret +="&lt;/tr&gt;";
+		ret +="</tr>";
 	}
 	return ret;
 }
