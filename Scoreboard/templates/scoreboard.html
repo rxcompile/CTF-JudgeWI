@@ -24,7 +24,7 @@
 	       	<th>Команда</th>
 			<th class ="logo">Лого</th>
 			{% for c in categories %}
-            <th class="tasks">{{c.name}}</th>
+                <th class="tasks">{{c.name}}</th>
 			{% endfor %}
             <th class="score">Общий счет</th>
         </tr>
@@ -32,23 +32,23 @@
 	
     <tbody>		
 		{% for t in data %}
-		{% if forloop.counter0 == 0 %}
-		<tr class="first">
-		{% elif forloop.counter0 == 1%}
-		<tr class="second">
-		{% elif forloop.counter0 == 2%}
-		<tr class="third">
-		{% else %}
-    	<tr class="other">
-		{% endif %}
-			<td>{{t.place}}</td>
-        	<td><a href="{% url team team_id=t.team.id %}">{{ t.team.name }}</a></td>
-			<td class ="logo"><img src="{{t.team.image}}" class ="images"></img></td>
-            {% for value in t.category %}
-			<td>{{ value }}</td>
-			{% endfor %}
-			<td>{{ t.total_score }}</td>
-		</tr>
+            {% if forloop.counter0 == 0 %}
+            <tr class="first">
+            {% elif forloop.counter0 == 1%}
+            <tr class="second">
+            {% elif forloop.counter0 == 2%}
+            <tr class="third">
+            {% else %}
+            <tr class="other">
+            {% endif %}
+                <td>{{t.place}}</td>
+                <td><a href="{% url team team_id=t.team.id %}">{{ t.team.name }}</a></td>
+                <td class ="logo"><img src="{{t.team.image}}" class="images"/></td>
+                {% for value in t.category %}
+                    <td>{{ value }}</td>
+                {% endfor %}
+                <td>{{ t.total_score }}</td>
+            </tr>
 		{% endfor %}       
     </tbody>
 </table>

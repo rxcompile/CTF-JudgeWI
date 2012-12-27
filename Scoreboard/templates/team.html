@@ -69,7 +69,7 @@
 </table>
 {% endblock %}
 {% block scripts %}
-<script>
+<script type="text/javascript">
 function checktask(task_id)
 {
 	$.ajax({
@@ -98,23 +98,23 @@ function sendflag(task_id, flag)
 	$.ajax({
 		url: '/chk',
 		data: {'task_id' : task_id, 'flag' : flag }
-		})
-  		.done(function(data) { 
-  			$('#overlay #flag').val(data.status);
-			$('#overlay #farm').removeClass('visible');
-  			})
-    	.fail(function() { 
-    		alert("error"); 
-    		});
+	})
+  	.done(function(data) {
+  		$('#overlay #flag').val(data.status);
+		$('#overlay #farm').removeClass('visible');
+  	})
+    .fail(function() {
+    	alert("error");
+    });
 }
 
 function updategrid()
 {
 	$.ajax({
-		url: '/tasks',
-		data: {'team_id' : {{team.id}}}
-		}).
-		done(function(data) {
+        url: '/tasks',
+        data: {'team_id' : {{team.id}}}
+		})
+		.done(function(data) {
 			$("#hor-zebra").empty();
 			$("#hor-zebra").html(generategrid(data));
 		}).
@@ -126,7 +126,7 @@ function updategrid()
 function generategrid(data)
 {
 	var ret = "";
-	alert("generategrid");
+	//alert("generategrid");
 	for( var t in data)
 	{
 		ret += "<tr><td>";

@@ -9,19 +9,19 @@ from Scoreboard.models import *
 
 #Ajax stuff
 def tasks(request):
-	#if not request.is_ajax():
-	#	return HttpResponseNotAllowed('Ajax')
-	team_id = request.GET.get('team_id')
-	team = Team.objects.get(id=team_id)
-	categories = Category.objects.all()
-	scores = Score.objects.filter(team=team).values()
-	tasks = Task.objects.filter(visible=True)
-	
-	data = [ {'cat': str(cat),
-			  'tasks' : [ {'task': str(task), 'issolved' : contains(scores, lambda x: x['task_id'] == task.id)} 
-			  for task in tasks.filter(category=cat)]} for cat in categories]
+    #if not request.is_ajax():
+    #	return HttpResponseNotAllowed('Ajax')
+    team_id = request.GET.get('team_id')
+    team = Team.objects.get(id=team_id)
+    categories = Category.objects.all()
+    scores = Score.objects.filter(team=team).values()
+    tasks = Task.objects.filter(visible=True)
 
-	return HttpResponse(json.dumps(data), mimetype="application/json")
+    data = [ {'cat': str(cat),
+              'tasks' : [ {'task': str(task), 'issolved' : contains(scores, lambda x: x['task_id'] == task.id)}
+              for task in tasks.filter(category=cat)]} for cat in categories]
+
+    return HttpResponse(json.dumps(data), mimetype="application/json")
 
 #Checks for allready sended flag, if not - create one
 def send_check_flag(request):
@@ -31,7 +31,7 @@ def send_check_flag(request):
     task_id = request.GET.get('task_id')
     team = get_team(get_ip(request))
     sended_flag = request.GET.get('flag')
-    
+
     task = Task.objects.get(id=task_id)
     result = check_flag(team,task,sended_flag)
     jsonDict = { "status": result }
@@ -63,8 +63,8 @@ def scores(request):
              } for t in teams].sort(key=lambda x: x['total_score'])
 
     for (i, d) in enumerate(data):
-		d['place'] = i+1
-    
+        d['place'] = i+1
+
     return HttpResponse(json.dumps(data), mimetype="application/json")
 
 #Lightweight return of "teamid - totalscore - place" data
@@ -74,23 +74,23 @@ def places(request):
         return HttpResponseNotAllowed('Ajax')
     teams = Team.objects.all()
     scores = Score.objects.select_related()
-    
+
     data = [{'id' : t.id,
              'total_score' : int( scores.filter(team=t).aggregate(sum=Sum('task__score'))['sum'] or 0 )
              } for t in teams].sort(key=lambda x: x['total_score'])
 
     for (i, d) in enumerate(data):
-		d['place'] = i+1
-  
+        d['place'] = i+1
+
     return HttpResponse(json.dumps(data), mimetype="application/json")
 
 #Pages
 #Scoreboard page
 def scoreboard(request):
     client_ip = get_ip(request)
-    
+
     team = get_team(client_ip)
-    
+
     teams = Team.objects.all()
     categories = Category.objects.all()
     scores = Score.objects.select_related()
@@ -103,23 +103,24 @@ def scoreboard(request):
              } for t in teams]
     data.sort(key=lambda x: x['total_score'],reverse=True)
     for (i, d) in enumerate(data):
-		d['place'] = i+1
-    
+        d['place'] = i+1
+
     return render_to_response('scoreboard.html',
                               {'team' : team, 
                                'user_address' : client_ip,
                                'data' : data,
                                'categories' : categories
                                },
-							   #context_instance=RequestContext(request),
-							   mimetype="application/xhtml+xml")
+                               #context_instance=RequestContext(request),
+                               mimetype="application/xhtml+xml"
+    )
 
 def contains(list, filter):
     for x in list:
         if filter(x):
             return True
     return False
-	
+
 #View team stats
 def team(request, team_id):
     client_ip = get_ip(request)
@@ -128,18 +129,18 @@ def team(request, team_id):
     categories = Category.objects.all()
     teams = Team.objects.all()
     scores = Score.objects.filter(team=team).values()
-    
+
     access_tasks = my_team is not None and team.id == my_team.id
-    
+
     tasks = Task.objects.filter(visible=True)
 
     dteams = [{'team' : t} for t in teams]
-	
-    
+
+
     data = [ {'cat': cat,
               'tasks' : [ {'task': task, 'issolved' : contains(scores, lambda x: x['task_id'] == task.id)} 
-			  for task in tasks.filter(category=cat)]} for cat in categories]
-        
+              for task in tasks.filter(category=cat)]} for cat in categories]
+
     if team is None:
         return HttpResponseNotFound()
 
@@ -151,7 +152,7 @@ def team(request, team_id):
                                'access' : access_tasks
 
                                },
-							   mimetype="application/xhtml+xml")
+                               mimetype="application/xhtml+xml")
 
 #Try to show my team only
 def myteam(request):
@@ -159,3 +160,25 @@ def myteam(request):
     team = get_team(client_ip)
 
     return team(request, team.id)
+
+def foreign_scoreboard(request):
+    teams = Team.objects.all()
+    categories = Category.objects.all()
+    scores = Score.objects.select_related()
+    jDict = {'categories': [], 'teams': []}
+    for category in categories:
+        jDict['categories'].append({'name': category.name, 'id': category.id})
+    for team in teams:
+        t = {'team': team.name, 'categories': []}
+        team_sum = 0
+        for category in categories:
+            scores = scores.filter(team=team, task__isnull=False, task__category=category)
+            sum = 0
+            for x in scores:
+                sum += int(x.task.score)
+            team_sum += sum
+            t['categories'].append({'category': category.id, 'scores': sum})
+        t['sum'] = team_sum
+        jDict['teams'].append(t)
+    jDict['teams'].sort(key=lambda x: x['sum'], reverse=True)
+    return HttpResponse(json.dumps(jDict), mimetype="application/xhtml+xml")
