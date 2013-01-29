@@ -69,7 +69,9 @@ def scores(request):
     for (i, d) in enumerate(data):
         d['place'] = i+1
 
-    return HttpResponse(json.dumps(data), mimetype="application/json")
+	response = HttpResponse(json.dumps(data), mimetype="application/json")
+	response["Access-Control-Allow-Origin"] = "*"
+    return response
 
 #Lightweight return of "teamid - totalscore - place" data
 #For some runtime dynamic stuff with ajax
