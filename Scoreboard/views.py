@@ -51,6 +51,29 @@ def task_info(request):
 #Returns: json with array of dict: [{'place'=1,'team'=TeamObject(see Models),'total_score'=1000,'category'=[100, 200, 100...]}...]
 #Category field contains data about scores from all categories
 def scores(request):
+    if not request.is_ajax():
+        return HttpResponseNotAllowed('Ajax')
+    teams = Team.objects.all()
+    categories = Category.objects.all()
+    scores = Score.objects.select_related()
+    data = [{'team' : t.name,
+			 'team_id' : t.id,
+			 'team_image' : t.image,
+             'total_score' : int( scores.filter(team=t).aggregate(sum=Sum('task__score'))['sum'] or 0 ),
+             'category' : [ int( scores.filter(team=t, task__isnull=False, task__category=c).aggregate(s=Sum('task__score'))['s'] or 0 )
+                             for c in categories]
+             } for t in teams]
+
+    data.sort(key=lambda x: x['total_score'],reverse=True)
+
+    for (i, d) in enumerate(data):
+        d['place'] = i+1
+
+	response = HttpResponse(json.dumps(data), mimetype="application/json")
+	response['Access-Control-Allow-Origin'] = '*'
+    return response
+
+def scoresExt(request):
     #if not request.is_ajax():
     #    return HttpResponseNotAllowed('Ajax')
     teams = Team.objects.all()
@@ -69,7 +92,7 @@ def scores(request):
     for (i, d) in enumerate(data):
         d['place'] = i+1
 
-	response = HttpResponse(json.dumps(data), mimetype="application/json")
+	response = HttpResponse(request.GET['callback'] + '(' + json.dumps(data) + ')', mimetype="application/json")
 	response['Access-Control-Allow-Origin'] = '*'
     return response
 

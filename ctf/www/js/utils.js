@@ -1,15 +1,17 @@
 function updatescores()
 {
 	$.ajax({
-        url: 'http://127.0.0.1:8000/scores'
-		})
-		.done(function(data) {
-			$("#hor-zebra > tbody").empty();
-			$("#hor-zebra > tbody:last").append(generatescores(data));
-		}).
-		fail(function() {
-			alert("error");
+        url: 'http://127.0.0.1:8000/scoresExt',
+			dataType: "jsonp",
+			jsonp : "callback",
+			jsonpCallback: "updatescorescallback"
 		});
+}
+
+function updatescorescallback(data)
+{
+	$("#hor-zebra > tbody").empty();
+	$("#hor-zebra > tbody:last").append(generatescores(data));
 }
 
 function generatescores(data)
