@@ -51,8 +51,8 @@ def task_info(request):
 #Returns: json with array of dict: [{'place'=1,'team'=TeamObject(see Models),'total_score'=1000,'category'=[100, 200, 100...]}...]
 #Category field contains data about scores from all categories
 def scores(request):
-    if not request.is_ajax():
-        return HttpResponseNotAllowed('Ajax')
+    #if not request.is_ajax():
+    #    return HttpResponseNotAllowed('Ajax')
     teams = Team.objects.all()
     categories = Category.objects.all()
     scores = Score.objects.select_related()
