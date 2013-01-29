@@ -9,7 +9,7 @@
 {% endblock %}
 
 {% block redirect %}
-	"/"
+	/
 {% endblock %}
 
 {% block name_redirect_page %}
@@ -69,7 +69,18 @@
 </table>
 {% endblock %}
 {% block scripts %}
+<script type="text/javascript" src="/static/js/utils.js"></script>
 <script type="text/javascript">
+function refreshgrid()
+{
+	{% if access %}
+	updategrid({{team.id}}, true);
+	{% else %}
+	updategrid({{team.id}}, false);
+	{% endif%}
+}
+setInterval(refreshgrid, 1000);
+
 function checktask(task_id)
 {
 	$.ajax({
@@ -100,53 +111,18 @@ function sendflag(task_id, flag)
 		data: {'task_id' : task_id, 'flag' : flag }
 	})
   	.done(function(data) {
-  		$('#overlay #flag').val(data.status);
-		$('#overlay #farm').removeClass('visible');
+  		
+		if(data.status)
+		{
+			$('#overlay #flag').val('Флаг принят');
+		} else {
+			$('#overlay #flag').val('Флаг не принят');
+		}
+		//$('#overlay #farm').removeClass('visible');
   	})
     .fail(function() {
     	alert("error");
     });
-}
-
-function updategrid()
-{
-	$.ajax({
-        url: '/tasks',
-        data: {'team_id' : {{team.id}}}
-		})
-		.done(function(data) {
-			$("#hor-zebra").empty();
-			$("#hor-zebra").html(generategrid(data));
-		}).
-		fail(function() {
-			alert("error");
-		});
-}
-
-function generategrid(data)
-{
-	var ret = "";
-	//alert("generategrid");
-	for( var t in data)
-	{
-		ret += "<tr><td>";
-		ret += t.cat;
-		ret += "</td>";
-		for(var tdict in t.tasks)
-		{
-			if(tdict.issolved)
-			{
-				ret += "<td>;" + tdict.task.name;
-			}
-			else
-			{
-				ret += "<td>" + tdict.task.name;
-			}
-			ret += "</td>";
-		}
-		ret +="</tr>";
-	}
-	return ret;
 }
 
 function closeOverlay()

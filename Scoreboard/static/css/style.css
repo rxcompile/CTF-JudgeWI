@@ -114,7 +114,7 @@ img.aligncenter {
 
 #logo {
 	width: 980px;
-	height: 100px;
+	height: 100px;go
 	margin: 0px auto;
 	padding: 80px 0px 0px 0px;
 	color: #FFFFFF;
@@ -372,6 +372,7 @@ img.aligncenter {
 #hor-zebra .logo
 {
 	 width: 50px;
+	 height: 50px;
 	 margin: 0;
 	 padding: 0;
 }

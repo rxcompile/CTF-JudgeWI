@@ -18,7 +18,7 @@ def tasks(request):
     tasks = Task.objects.filter(visible=True)
 
     data = [ {'cat': str(cat),
-              'tasks' : [ {'task': str(task), 'issolved' : contains(scores, lambda x: x['task_id'] == task.id)}
+              'tasks' : [ {'task_id': task.id, 'task': str(task), 'issolved' : contains(scores, lambda x: x['task_id'] == task.id)}
               for task in tasks.filter(category=cat)]} for cat in categories]
 
     return HttpResponse(json.dumps(data), mimetype="application/json")
@@ -56,11 +56,15 @@ def scores(request):
     teams = Team.objects.all()
     categories = Category.objects.all()
     scores = Score.objects.select_related()
-    data = [{'team' : t,
+    data = [{'team' : t.name,
+			 'team_id' : t.id,
+			 'team_image' : t.image,
              'total_score' : int( scores.filter(team=t).aggregate(sum=Sum('task__score'))['sum'] or 0 ),
              'category' : [ int( scores.filter(team=t, task__isnull=False, task__category=c).aggregate(s=Sum('task__score'))['s'] or 0 )
                              for c in categories]
-             } for t in teams].sort(key=lambda x: x['total_score'])
+             } for t in teams]
+
+    data.sort(key=lambda x: x['total_score'],reverse=True)
 
     for (i, d) in enumerate(data):
         d['place'] = i+1
@@ -77,7 +81,9 @@ def places(request):
 
     data = [{'id' : t.id,
              'total_score' : int( scores.filter(team=t).aggregate(sum=Sum('task__score'))['sum'] or 0 )
-             } for t in teams].sort(key=lambda x: x['total_score'])
+             } for t in teams]
+
+    data.sort(key=lambda x: x['total_score'],reverse=True)
 
     for (i, d) in enumerate(data):
         d['place'] = i+1
@@ -107,6 +113,7 @@ def scoreboard(request):
 
     return render_to_response('scoreboard.html',
                               {'team' : team, 
+							   'mteam' : team,
                                'user_address' : client_ip,
                                'data' : data,
                                'categories' : categories
@@ -138,7 +145,7 @@ def team(request, team_id):
 
 
     data = [ {'cat': cat,
-              'tasks' : [ {'task': task, 'issolved' : contains(scores, lambda x: x['task_id'] == task.id)} 
+              'tasks' : [ {'task_id': task.id, 'task': task, 'issolved' : contains(scores, lambda x: x['task_id'] == task.id)} 
               for task in tasks.filter(category=cat)]} for cat in categories]
 
     if team is None:
@@ -146,6 +153,7 @@ def team(request, team_id):
 
     return render_to_response('team.html',
                               {'team' : team, 
+							   'mteam' : my_team,
                                'teams' : dteams,
                                'data' : data,
                                'user_address' : get_ip(request),

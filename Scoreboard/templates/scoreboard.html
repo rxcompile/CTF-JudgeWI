@@ -9,11 +9,18 @@
 {% endblock %}
 
 {% block redirect %}
-	"{% url team team_id=team.id %}"
+	{% url team team_id=team.id %}
 {% endblock %}
 
 {% block name_redirect_page %}
 	Задания для команды {{team.name}}
+{% endblock %}
+
+{% block scripts %}
+<script type="text/javascript" src="/static/js/utils.js"></script>
+<script type="text/javascript">
+setInterval(updatescores, 5000);
+</script>
 {% endblock %}
 		
 {% block content %}
