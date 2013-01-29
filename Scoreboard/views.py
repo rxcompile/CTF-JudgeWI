@@ -70,7 +70,7 @@ def scores(request):
         d['place'] = i+1
 
 	response = HttpResponse(json.dumps(data), mimetype="application/json")
-	response["Access-Control-Allow-Origin"] = "*"
+	response['Access-Control-Allow-Origin'] = '*'
     return response
 
 #Lightweight return of "teamid - totalscore - place" data
