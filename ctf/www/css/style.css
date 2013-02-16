@@ -70,7 +70,12 @@ img.aligncenter {
 
 #header-wrapper {
 	height: 240px;
-	background: url(images/fox22.jpg) no-repeat center top;
+	background: url(/images/fox22.jpg) no-repeat center top;
+}
+#table-wrapper {
+	width: 980px;	
+	margin: 0px auto;
+	padding: 0px 0px 0px 0px;
 }
 
 #header {
@@ -319,7 +324,7 @@ img.aligncenter {
 #sidebar li li {
 	padding-left: 20px;
 	line-height: 35px;
-	background: url(images/img07.jpg) no-repeat left 14px;
+	background: url(/images/img07.jpg) no-repeat left 14px;
 }
 
 #sidebar li li span {

@@ -8,7 +8,7 @@ function updatescores()
 			$("#hor-zebra > tbody:last").append(generatescores(data));
 		}).
 		fail(function() {
-			alert("error");
+			//alert("error");
 		});
 }
 
@@ -53,7 +53,7 @@ function updategrid(team_id, access)
 			$("#hor-zebra").html(generategrid(data, access));
 		}).
 		fail(function() {
-			alert("error");
+			//alert("error");
 		});
 }
 
