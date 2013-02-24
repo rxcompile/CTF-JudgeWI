@@ -1,20 +1,12 @@
 ﻿{% extends "base.html" %}
 
-{% block hightitle %}
-    Очки, набранные командами
-{% endblock %}
+{% block hightitle %}Очки, набранные командами{% endblock %}
 
-{% block title %}
-    Очки, набранные командами
-{% endblock %}
+{% block title %}Очки, набранные командами{% endblock %}
 
-{% block redirect %}
-    {% url team team_id=team.id %}
-{% endblock %}
+{% block redirect %}{% url TeamPage mteam.id %}{% endblock %}
 
-{% block name_redirect_page %}
-    Задания для команды {{team.name}}
-{% endblock %}
+{% block name_redirect_page %}Задания для команды {{mteam.name}}{% endblock %}
 
 {% block scripts %}
 <script type="text/javascript" src="/static/js/utils.js"></script>
@@ -49,7 +41,7 @@ setInterval(updatescores, 5000);
             <tr class="other">
             {% endif %}
                 <td>{{t.place}}</td>
-                <td><a href="{% url team team_id=t.team.id %}">{{ t.team.name }}</a></td>
+                <td><a href="{% url TeamPage team_id=t.team.id %}">{{ t.team.name }}</a></td>
                 <td class ="logo"><img src="{{t.team.image}}" class="images"/></td>
                 {% for value in t.category %}
                     <td>{{ value }}</td>

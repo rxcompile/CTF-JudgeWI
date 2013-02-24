@@ -81,8 +81,11 @@ class Score(models.Model):
         return u'%s scores %s from %s' % (self.team, self.task.score, self.task)
 
 class FlagLog(models.Model):
-    team = models.ForeignKey(Team,related_name='team')
-    task = models.ForeignKey(Task,related_name='task')
+    def GetFilename(instance,filename):
+        return os.path.join('uploads', str(instance.team), str(instance.task), filename)
+
+    team = models.ForeignKey(Team)
+    task = models.ForeignKey(Task)
     flag = models.CharField(u'Отправленный флаг', max_length=20)
     file = models.FileField(u'Файл', upload_to=GetFilename)
 
@@ -93,8 +96,6 @@ class FlagLog(models.Model):
     def __unicode__(self):
         return u'%s send %s' % (self.team, self.flag)
 
-    def GetFilename(instance,filename):
-        return os.path.join('uploads', str(instance.team), str(instance.task), filename)
 
 class Flag(models.Model):
     task = models.ForeignKey(Task)

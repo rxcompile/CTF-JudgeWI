@@ -1,16 +1,10 @@
 ﻿{% extends "base.html" %}
 
-{% block hightitle %}
-    Задания команды {{team.name}}
-{% endblock %}
+{% block hightitle %}Задания команды {{team.name}}{% endblock %}
 
-{% block title %}
-    Задания команды {{team.name}}
-{% endblock %}
+{% block title %}Задания команды {{team.name}}{% endblock %}
 
-{% block redirect %}
-    /
-{% endblock %}
+{% block redirect %}/{% endblock %}
 
 {% block name_redirect_page %}
     Очки, набранные командами
@@ -187,7 +181,7 @@
         {{ open_tv }}else{{ close_tv }}
         <td class="preview">
             {{ open_tv }}if thumbnail_url{{ close_tv }}
-            <a href="${url}" target="_blank"><img src="${thumbnail_url}"></a>
+            <a href="${url}" target="_blank"><img src="${thumbnail_url}"/></a>
             {{ open_tv }}/if{{ close_tv }}
         </td>
         <td class="name">

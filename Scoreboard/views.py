@@ -154,7 +154,7 @@ def team(request, team_id):
     # add csrf token value to the dictionary
     c.update(csrf(request))
     # return
-    return HttpResponse(t.render(c), mimetype="application/xhtml+xml")
+    return HttpResponse(t.render(c), mimetype="text/html")
 
     
 #Checks for allready sended flag, if not - create one

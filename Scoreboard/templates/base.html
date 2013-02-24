@@ -13,7 +13,7 @@
         <ul>
             <li><a href="/">Ваш адрес: {{ user_address }}</a></li>
             {% if team %}
-            <li><a href="{% url team team_id=mteam.id %}">Добро пожаловать, {{ mteam.name }}</a></li>
+            <li><a href="{% url MyTeamPage %}">Добро пожаловать, {{ mteam.name }}</a></li>
             {% endif %}
             <li><a href="{% block redirect %} {% endblock %}">{% block name_redirect_page %} {% endblock %}</a></li>
         </ul>
