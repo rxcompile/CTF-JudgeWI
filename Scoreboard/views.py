@@ -3,7 +3,17 @@ from django.shortcuts import render_to_response
 from django.http import HttpResponse, HttpResponseNotAllowed,\
     HttpResponseNotFound
 from django.db.models.aggregates import Sum
+# for generating json
 import django.utils.simplejson as json
+# for loading template
+from django.template import Context, loader
+# for csrf
+from django.core.context_processors import csrf
+# import the django settings
+from django.conf import settings
+# for os manipulations
+import os
+
 from Scoreboard.utils import *
 from Scoreboard.models import *
 
@@ -22,30 +32,6 @@ def tasks(request):
               for task in tasks.filter(category=cat)]} for cat in categories]
 
     return HttpResponse(json.dumps(data), mimetype="application/json")
-
-#Checks for allready sended flag, if not - create one
-def send_check_flag(request):
-    if not request.is_ajax():
-        return HttpResponseNotAllowed('Ajax')
-
-    task_id = request.GET.get('task_id')
-    team = get_team(get_ip(request))
-    sended_flag = request.GET.get('flag')
-
-    task = Task.objects.get(id=task_id)
-    result = check_flag(team,task,sended_flag)
-    jsonDict = { "status": result }
-    return HttpResponse( json.dumps( jsonDict ), mimetype="application/json" )
-
-#Retrieve info for task
-def task_info(request):
-    if not request.is_ajax():
-        return HttpResponseNotAllowed('Ajax')
-    task_id = request.GET.get('task_id')
-    team = get_team(get_ip(request))
-    task = Task.objects.get(id=task_id)
-    jsonDict = {'task' : task.description, 'score' : task.score, 'status' : isSolveTask(team,task), 'isFile' : task.isFile }
-    return HttpResponse( json.dumps( jsonDict ), mimetype="application/json" )
 
 #Teams with scores
 #Returns: json with array of dict: [{'place'=1,'team'=TeamObject(see Models),'total_score'=1000,'category'=[100, 200, 100...]}...]
@@ -147,17 +133,14 @@ def scoreboard(request):
                                mimetype="application/xhtml+xml"
     )
 
-def contains(list, filter):
-    for x in list:
-        if filter(x):
-            return True
-    return False
-
 #View team stats
 def team(request, team_id):
     client_ip = get_ip(request)
     my_team = get_team(client_ip)
     team = Team.objects.get(id=team_id)
+    if team is None:
+        return HttpResponseNotFound()
+
     categories = Category.objects.all()
     teams = Team.objects.all()
     scores = Score.objects.filter(team=team).values()
@@ -168,23 +151,75 @@ def team(request, team_id):
 
     dteams = [{'team' : t} for t in teams]
 
-
     data = [ {'cat': cat,
-              'tasks' : [ {'task_id': task.id, 'task': task, 'issolved' : contains(scores, lambda x: x['task_id'] == task.id)} 
-              for task in tasks.filter(category=cat)]} for cat in categories]
+              'tasks' : [{'task_id': task.id, 
+                          'task': task, 
+                          'issolved' : contains(scores, lambda x: x['task_id'] == task.id)
+                         } for task in tasks.filter(category=cat)]
+             } for cat in categories]
 
-    if team is None:
-        return HttpResponseNotFound()
+    # settings for the file upload
+    #   you can define other parameters here
+    #   and check validity late in the code
+    options = {
+        # the maximum file size (must be in bytes)
+        "maxfilesize": 10 * 2 ** 20, # 10 Mb
+        # the minimum file size (must be in bytes)
+        "minfilesize": 100 * 2 ** 10, # 100 Kb
+        # the file types which are going to be allowed for upload
+        #   must be a mimetype
+        "acceptedformats": (
+            "image/jpeg",
+            "image/png",
+            )
+    }
+    # load the template
+    t = loader.get_template("team.html")
+    c = Context({
+        'team' : team, 
+        'mteam' : my_team,
+        'teams' : dteams,
+        'data' : data,
+        'user_address' : get_ip(request),
+        'access' : access_tasks,
+        # these two are necessary to generate the jQuery templates
+        # they have to be included here since they conflict with django template system
+        "open_tv": u'{{',
+        "close_tv": u'}}',
+        # some of the parameters to be checked by javascript
+        "maxfilesize": options["maxfilesize"],
+        "minfilesize": options["minfilesize"],
+        })
+    # add csrf token value to the dictionary
+    c.update(csrf(request))
+    # return
+    return HttpResponse(t.render(c), mimetype="application/xhtml+xml")
 
-    return render_to_response('team.html',
-                              {'team' : team, 
-                               'mteam' : my_team,
-                               'teams' : dteams,
-                               'data' : data,
-                               'user_address' : get_ip(request),
-                               'access' : access_tasks
-                               },
-                               mimetype="application/xhtml+xml")
+    
+#Checks for allready sended flag, if not - create one
+#Ajax check flag logic
+def send_check_flag(request):
+    if not request.is_ajax():
+        return HttpResponseNotAllowed('Ajax')
+
+    task_id = request.GET.get('task_id')
+    team = get_team(get_ip(request))
+    sended_flag = request.GET.get('flag')
+
+    task = Task.objects.get(id=task_id)
+    result = check_flag(team,task,sended_flag)
+    jsonDict = { "status": result }
+    return HttpResponse( json.dumps( jsonDict ), mimetype="application/json" )
+
+#Retrieve info for task
+def task_info(request):
+    if not request.is_ajax():
+        return HttpResponseNotAllowed('Ajax')
+    task_id = request.GET.get('task_id')
+    team = get_team(get_ip(request))
+    task = Task.objects.get(id=task_id)
+    jsonDict = {'task' : task.description, 'score' : task.score, 'status' : isSolveTask(team,task), 'isFile' : task.isFile }
+    return HttpResponse( json.dumps( jsonDict ), mimetype="application/json" )
 
 #Try to show my team only
 def myteam(request):

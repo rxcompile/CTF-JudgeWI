@@ -4,6 +4,7 @@
 '''
 
 from django.db import models
+import os
 
 class TeamMember(models.Model):
     name = models.CharField(u'ФИО', max_length=50)
@@ -26,26 +27,26 @@ class Team(models.Model):
     class Meta:
         verbose_name_plural = u"Команды"
         verbose_name = u"Команда"
-        
+
     def get_members_display(self):
         return u', '.join([i.name for i in self.members.all()])
     get_members_display.short_description = u"Участники"
 
-        
+
     def __unicode__(self):
         return self.name
 
 class Category(models.Model):
     name = models.CharField(u'Название', max_length=40)
     tip = models.TextField(u'Подсказка', blank=True)
-    
+
     class Meta:
         verbose_name_plural = u"Категории"
         verbose_name = u"Категория"
-    
+
     def __unicode__(self):
         return self.name
-    
+
 SCORE_CHOICES = (
     (100,'100'),
     (200,'200'),
@@ -80,9 +81,11 @@ class Score(models.Model):
         return u'%s scores %s from %s' % (self.team, self.task.score, self.task)
 
 class FlagLog(models.Model):
-    team = models.ForeignKey(Team)
-    flag = models.CharField(u'Флаг',max_length=20)
-    
+    team = models.ForeignKey(Team,related_name='team')
+    task = models.ForeignKey(Task,related_name='task')
+    flag = models.CharField(u'Отправленный флаг', max_length=20)
+    file = models.FileField(u'Файл', upload_to=GetFilename)
+
     class Meta:
         verbose_name_plural = u"Отправленные флаги"
         verbose_name = u"Отправленный флаг"
@@ -90,13 +93,16 @@ class FlagLog(models.Model):
     def __unicode__(self):
         return u'%s send %s' % (self.team, self.flag)
 
+    def GetFilename(instance,filename):
+        return os.path.join('uploads', str(instance.team), str(instance.task), filename)
+
 class Flag(models.Model):
     task = models.ForeignKey(Task)
     flag = models.CharField(u'Флаг',max_length=20)
-    
+
     class Meta:
         verbose_name_plural = u"Флаги"
         verbose_name = u"Флаг"
-    
+
     def __unicode__(self):
         return u'%s %s' % (self.flag, self.task)
