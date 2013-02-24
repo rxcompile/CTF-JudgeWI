@@ -89,3 +89,62 @@ function generategrid(data, access)
     }
     return ret;
 }
+
+function refreshgrid()
+{
+    {% if access %}
+    updategrid({{team.id}}, true);
+    {% else %}
+    updategrid({{team.id}}, false);
+    {% endif%}
+}
+setInterval(refreshgrid, 1000);
+
+function checktask(task_id)
+{
+    $.ajax({
+        url: '/tsk',
+        data: {'task_id' : task_id }
+        })
+          .done(function(data) { 
+              $('#overlay #content').empty();
+              $('#overlay #content').append(data.task);
+              $('#overlay #task_id').val(task_id);
+              $('#overlay #flag').val("");
+              if(!data.status)
+                $('#overlay #farm').addClass('visible');
+            else
+                $('#overlay #farm').removeClass('visible');
+            $('#overlay').addClass('visible');
+              })
+        .fail(function() { 
+            $('#overlay').removeClass('visible');
+            alert("error");
+            });
+}
+
+function sendflag(task_id, flag)
+{
+    $.ajax({
+        url: '/chk',
+        data: {'task_id' : task_id, 'flag' : flag }
+    })
+      .done(function(data) {
+        if(data.status)
+        {
+            $('#overlay #flag').val('Флаг принят');
+        } else {
+            $('#overlay #flag').val('Флаг не принят');
+        }
+        //$('#overlay #farm').removeClass('visible');
+      })
+    .fail(function() {
+        alert("error");
+    });
+}
+
+function closeOverlay()
+{
+    $('#overlay').removeClass('visible');
+    $('#overlay #flag').val("");
+}
