@@ -27,13 +27,14 @@
         <tr>
             <td>
                 <div id="sendform" class="frm">
-                <form method="post" 
+                <form action="/chk" method="post" 
                     {% if form.is_multipart %}enctype="multipart/form-data"{% endif %}>
                     {% csrf_token %}
                     <input type="hidden" value="" id="task_id"/>
                     <input type="text" id="flag"/>
+                    <input type="file" id="file" style="display:none;"/>
                     <!--<input type="button" onclick="sendflag($('#overlay #task_id').val(), $('#overlay #flag').val())" value="Отправить флаг"/> -->
-                    <input type="submit" value="Отправить" />
+                    <button type="submit">Отправить</button>
                 </form>
                 </div>
             </td>
@@ -98,7 +99,7 @@
         // Initialize the jQuery File Upload widget
         // For a complete option reference go to
         // https://github.com/blueimp/jQuery-File-Upload
-        $('#fileupload').fileupload({
+        $('#sendform').fileupload({
             // this formData is neccessary to pass the csrf and pass uid to django
             formData: [
                 { name: "uid", value: "{{ uid }}"},
@@ -110,11 +111,11 @@
         });
 
         // Load existing files
-        $.getJSON($('#fileupload form').prop('action'), function (files) {
-            var fu = $('#fileupload').data('fileupload');
+        $.getJSON($('#sendform form').prop('action'), function (files) {
+            var fu = $('#sendform').data('fileupload');
             fu._adjustMaxNumberOfFiles(-files.length);
             fu._renderDownload(files)
-                    .appendTo($('#fileupload .files'))
+                    .appendTo($('#sendform .files'))
                     .fadeIn(function () {
                         // Fix for IE7 and lower:
                         $(this).show();
@@ -123,7 +124,7 @@
 
         // Open download dialogs via iframes,
         // to prevent aborting current uploads
-        $('#fileupload .files a:not([target^=_blank])').live('click', function (e) {
+        $('#sendform .files a:not([target^=_blank])').live('click', function (e) {
             e.preventDefault();
             $('<iframe style="display:none;"></iframe>')
                     .prop('src', this.href)
@@ -200,5 +201,16 @@
             <button data-type="${delete_type}" data-url="${delete_url}">Delete</button>
         </td>
     </tr>
+</script>
+
+<script type="text/javascript">
+function refreshgrid() {
+    {% if access %}
+    updategrid({{team.id}}, true);
+    {% else %}
+    updategrid({{team.id}}, false);
+    {% endif%}
+}
+setInterval(refreshgrid, 1000);
 </script>
 {% endblock %}

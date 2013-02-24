@@ -3,20 +3,18 @@ function updatescores()
     $.ajax({
         url: '/scores'
         })
-        .done(function(data) {
-            $("#hor-zebra > tbody").empty();
-            $("#hor-zebra > tbody:last").append(generatescores(data));
-        }).
-        fail(function() {
-            //alert("error");
-        });
+    .done(function(data) {
+        $("#hor-zebra > tbody").empty();
+        $("#hor-zebra > tbody:last").append(generatescores(data));
+    })
+    .fail(function() {
+        //alert("error");
+    });
 }
 
-function generatescores(data)
-{
+function generatescores(data) {
     var ret = "";
-    for( var i in data)
-    {
+    for( var i in data) {
         var t = data[i];
         if(i == 0){
             ret += "<tr class=\"first\">";
@@ -30,10 +28,8 @@ function generatescores(data)
         ret += "<td>" + t.place + "</td>";
         ret += "<td><a href='/team/" + t.team_id + "'>" + t.team + "</a></td>";
         ret += "<td class =\"logo\"><img src='" + t.team_image +"' class=\"images\"/></td>";
-        for(var itdict in t.category)
-        {
+        for(var itdict in t.category) {
             var value = t.category[itdict];
-            
             ret += "<td>" + value + "</td>";
         }
         ret +="<td>" + t.total_score + "</td>";
@@ -42,40 +38,34 @@ function generatescores(data)
     return ret;
 }
 
-function updategrid(team_id, access)
-{
+function updategrid(team_id, access) {
     $.ajax({
         url: '/tasks',
         data: {'team_id' : team_id}
-        })
-        .done(function(data) {
-            $("#hor-zebra").empty();
-            $("#hor-zebra").html(generategrid(data, access));
-        }).
-        fail(function() {
-            //alert("error");
-        });
+    })
+    .done(function(data) {
+        $("#hor-zebra").empty();
+        $("#hor-zebra").html(generategrid(data, access));
+    })
+    .fail(function() {
+        //alert("error");
+    });
 }
 
-function generategrid(data, access)
-{
+function generategrid(data, access) {
     var ret = "";
     //alert("generategrid");
-    for( var i in data)
-    {
+    for( var i in data) {
         var t = data[i];
         ret += "<tr><td class=\"name\">";
         ret += t.cat;
         ret += "</td>";
-        for(var itdict in t.tasks)
-        {
+        for(var itdict in t.tasks) {
             var tdict = t.tasks[itdict];
-            if(tdict.issolved)
-            {
+            if(tdict.issolved) {
                 ret += "<td class=\"solved\">";
             }
-            else
-            {
+            else {
                 ret += "<td class=\"tasks\">";
             }
             if(access) {
@@ -90,61 +80,50 @@ function generategrid(data, access)
     return ret;
 }
 
-function refreshgrid()
-{
-    {% if access %}
-    updategrid({{team.id}}, true);
-    {% else %}
-    updategrid({{team.id}}, false);
-    {% endif%}
-}
-setInterval(refreshgrid, 1000);
-
-function checktask(task_id)
-{
+function checktask(task_id) {
     $.ajax({
         url: '/tsk',
         data: {'task_id' : task_id }
-        })
-          .done(function(data) { 
-              $('#overlay #content').empty();
-              $('#overlay #content').append(data.task);
-              $('#overlay #task_id').val(task_id);
-              $('#overlay #flag').val("");
-              if(!data.status)
-                $('#overlay #farm').addClass('visible');
-            else
-                $('#overlay #farm').removeClass('visible');
-            $('#overlay').addClass('visible');
-              })
-        .fail(function() { 
-            $('#overlay').removeClass('visible');
-            alert("error");
-            });
+    })
+    .done(function(data) { 
+        $('#overlay #content').empty();
+        $('#overlay #content').append(data.task);
+        $('#overlay #task_id').val(task_id);
+        $('#overlay #flag').val("");
+        if(!data.status)
+            $('#sendform').addClass('visible');
+        else
+            $('#sendform').removeClass('visible');
+        if(data.isFile)
+            $('#sendform #file').addClass('visible');
+        else
+            $('#sendform #file').removeClass('visible');
+        $('#overlay').addClass('visible');
+    })
+    .fail(function() { 
+        $('#overlay').removeClass('visible');
+        alert("error");
+    });
 }
 
-function sendflag(task_id, flag)
-{
+function sendflag(task_id, flag) {
     $.ajax({
         url: '/chk',
         data: {'task_id' : task_id, 'flag' : flag }
     })
-      .done(function(data) {
+    .done(function(data) {
         if(data.status)
-        {
             $('#overlay #flag').val('Флаг принят');
-        } else {
+        else
             $('#overlay #flag').val('Флаг не принят');
-        }
         //$('#overlay #farm').removeClass('visible');
-      })
+    })
     .fail(function() {
         alert("error");
     });
 }
 
-function closeOverlay()
-{
+function closeOverlay() {
     $('#overlay').removeClass('visible');
     $('#overlay #flag').val("");
 }

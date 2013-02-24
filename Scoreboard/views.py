@@ -27,9 +27,12 @@ def tasks(request):
     scores = Score.objects.filter(team=team).values()
     tasks = Task.objects.filter(visible=True)
 
-    data = [ {'cat': str(cat),
-              'tasks' : [ {'task_id': task.id, 'task': str(task), 'issolved' : contains(scores, lambda x: x['task_id'] == task.id)}
-              for task in tasks.filter(category=cat)]} for cat in categories]
+    data = [{'cat': str(cat),
+             'tasks' : [{'task_id': task.id, 
+                         'task': str(task), 
+                         'issolved' : contains(scores, lambda x: x['task_id'] == task.id)
+                        } for task in tasks.filter(category=cat)]
+            } for cat in categories]
 
     return HttpResponse(json.dumps(data), mimetype="application/json")
 
@@ -37,8 +40,8 @@ def tasks(request):
 #Returns: json with array of dict: [{'place'=1,'team'=TeamObject(see Models),'total_score'=1000,'category'=[100, 200, 100...]}...]
 #Category field contains data about scores from all categories
 def scores(request):
-    if not request.is_ajax():
-        return HttpResponseNotAllowed('Ajax')
+    #if not request.is_ajax():
+    #    return HttpResponseNotAllowed('Ajax')
     teams = Team.objects.all()
     categories = Category.objects.all()
     scores = Score.objects.select_related()
@@ -58,48 +61,6 @@ def scores(request):
     response = HttpResponse(json.dumps(data), mimetype="application/json")
     response['Access-Control-Allow-Origin'] = '*'
     return response
-
-def scoresExt(request):
-    #if not request.is_ajax():
-    #    return HttpResponseNotAllowed('Ajax')
-    teams = Team.objects.all()
-    categories = Category.objects.all()
-    scores = Score.objects.select_related()
-    data = [{'team' : t.name,
-             'team_id' : t.id,
-             'team_image' : t.image,
-             'total_score' : int( scores.filter(team=t).aggregate(sum=Sum('task__score'))['sum'] or 0 ),
-             'category' : [ int( scores.filter(team=t, task__isnull=False, task__category=c).aggregate(s=Sum('task__score'))['s'] or 0 )
-                             for c in categories]
-             } for t in teams]
-
-    data.sort(key=lambda x: x['total_score'],reverse=True)
-
-    for (i, d) in enumerate(data):
-        d['place'] = i+1
-
-    response = HttpResponse(request.GET['callback'] + '(' + json.dumps(data) + ')', mimetype="application/json")
-    response['Access-Control-Allow-Origin'] = '*'
-    return response
-
-#Lightweight return of "teamid - totalscore - place" data
-#For some runtime dynamic stuff with ajax
-def places(request):
-    if not request.is_ajax():
-        return HttpResponseNotAllowed('Ajax')
-    teams = Team.objects.all()
-    scores = Score.objects.select_related()
-
-    data = [{'id' : t.id,
-             'total_score' : int( scores.filter(team=t).aggregate(sum=Sum('task__score'))['sum'] or 0 )
-             } for t in teams]
-
-    data.sort(key=lambda x: x['total_score'],reverse=True)
-
-    for (i, d) in enumerate(data):
-        d['place'] = i+1
-
-    return HttpResponse(json.dumps(data), mimetype="application/json")
 
 #Pages
 #Scoreboard page
@@ -199,17 +160,39 @@ def team(request, team_id):
 #Checks for allready sended flag, if not - create one
 #Ajax check flag logic
 def send_check_flag(request):
-    if not request.is_ajax():
-        return HttpResponseNotAllowed('Ajax')
+    if not request.method == 'POST':
+        return HttpResponseNotAllowed('POST')
 
-    task_id = request.GET.get('task_id')
+    task_id = request.POST.get('task_id')
     team = get_team(get_ip(request))
-    sended_flag = request.GET.get('flag')
+    sended_flag = request.POST.get('flag')
 
     task = Task.objects.get(id=task_id)
-    result = check_flag(team,task,sended_flag)
-    jsonDict = { "status": result }
-    return HttpResponse( json.dumps( jsonDict ), mimetype="application/json" )
+    
+    result = False
+    #Logging to DB sended flag
+    log = FlagLog.objects.create(flag=sended_flag, team=team, task=task)
+    if task.isFile:
+        if not request.FILES:
+            return HttpResponseBadRequest('Must upload a file')
+        log.file = request.Files['file']
+    log.save()
+    try:
+        if not isSolveTask(team,task):
+            #Special logic for files => no auto scores
+            if not task.isFile:
+                #Check if flag is equals to sended value
+                #Throws exception if not
+                Flag.objects.get(flag=sended_flag, task=task)
+                #Increment scores for team
+                score = Score.objects.create(team=team, task=task)
+                score.save()
+        result = True
+    except:
+        result = False
+
+    jsonDict = json.dumps({ "status": result })
+    return HttpResponse(jsonDict, mimetype="application/json")
 
 #Retrieve info for task
 def task_info(request):
