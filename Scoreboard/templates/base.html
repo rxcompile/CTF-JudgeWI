@@ -9,44 +9,44 @@
 {% block scripts %}{% endblock %}
 </head>
 <body>
-	<div id="menu-wrapper">
-		<div id="menu">
-            <ul>
-                <li><a href="/">Ваш адрес: {{ user_address }}</a></li>
-                {% if team %}
-                <li><a href="{% url team team_id=mteam.id %}">Добро пожаловать, {{ mteam.name }}</a></li>
-                {% endif %}
-                <li><a href="{% block redirect %} {% endblock %}">{% block name_redirect_page %} {% endblock %}</a></li>
-            </ul>
-		</div>
-		<!-- end #menu -->
-	</div>
+<div id="menu-wrapper">
+    <div id="menu">
+        <ul>
+            <li><a href="/">Ваш адрес: {{ user_address }}</a></li>
+            {% if team %}
+            <li><a href="{% url team team_id=mteam.id %}">Добро пожаловать, {{ mteam.name }}</a></li>
+            {% endif %}
+            <li><a href="{% block redirect %} {% endblock %}">{% block name_redirect_page %} {% endblock %}</a></li>
+        </ul>
+    </div>
+    <!-- end #menu -->
+</div>
 <div id="wrapper">
-	<!-- #header -->
-	<div id="header-wrapper">
-		<div id="header">
-			<div id="logo">
-				<h1><a href="/">IBST.PSU CTF</a></h1>
-				<p>provided by <a href="http://ibst.pnzgu.ru/index.php/vse-ostalnoe/ctrl-pnz">CTRL-PNZ</a></p>				
-				<h2>{% block title %}{% endblock %}</h2>
-			</div>
-		</div>
-	</div>
-	<!-- end #header -->
-	
-	<div id="page">	
-		<!-- #content -->
-		<div id="content">
-			<div class="post">				
-				{% block content %}{% endblock %}
-			</div>
-		</div>
-			<!-- end #content -->	
-	</div>
-	<!-- end #page -->
+    <!-- #header -->
+    <div id="header-wrapper">
+        <div id="header">
+            <div id="logo">
+                <h1><a href="/">IBST.PSU CTF</a></h1>
+                <p>provided by <a href="http://ibst.pnzgu.ru/index.php/vse-ostalnoe/ctrl-pnz">CTRL-PNZ</a></p>                
+                <h2>{% block title %}{% endblock %}</h2>
+            </div>
+        </div>
+    </div>
+    <!-- end #header -->
+    
+    <div id="page">
+        <!-- #content -->
+        <div id="content">
+            <div class="post">
+                {% block content %}{% endblock %}
+            </div>
+        </div>
+            <!-- end #content -->
+    </div>
+    <!-- end #page -->
 </div>
 <div id="footer">
-	<p>Created by <a href="http://ibst.pnzgu.ru/index.php/vse-ostalnoe/ctrl-pnz">CTRL-PNZ</a>. Design by <a href="http://ibst.pnzgu.ru/index.php/kafedra/kontakty-kafedry-3">Mr.Gypnocat</a>.</p>
+    <p>Created by <a href="http://ibst.pnzgu.ru/index.php/vse-ostalnoe/ctrl-pnz">CTRL-PNZ</a>. Design by <a href="http://ibst.pnzgu.ru/index.php/kafedra/kontakty-kafedry-3">Mr.Gypnocat</a>.</p>
 </div>
 <!-- end #footer -->
 </body>

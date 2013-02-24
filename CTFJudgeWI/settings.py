@@ -95,7 +95,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.messages.middleware.MessageMiddleware',
     # Uncomment the next line for simple clickjacking protection:
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-	'django.contrib.flatpages.middleware.FlatpageFallbackMiddleware',	#Gypnocat
+    'django.contrib.flatpages.middleware.FlatpageFallbackMiddleware',   #Gypnocat
 )
 
 ROOT_URLCONF = 'CTFJudgeWI.urls'
@@ -122,7 +122,7 @@ INSTALLED_APPS = (
     # Uncomment the next line to enable admin documentation:
     # 'django.contrib.admindocs',
     'Scoreboard',
-	'django.contrib.flatpages',		#Gypnocat
+    'django.contrib.flatpages',     #Gypnocat
 )
 
 # A sample logging configuration. The only tangible logging

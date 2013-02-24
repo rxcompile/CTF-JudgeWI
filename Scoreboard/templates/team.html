@@ -1,71 +1,70 @@
 ﻿{% extends "base.html" %}
 
 {% block hightitle %}
-	Задания команды {{team.name}}
+    Задания команды {{team.name}}
 {% endblock %}
 
 {% block title %}
-	Задания команды {{team.name}}
+    Задания команды {{team.name}}
 {% endblock %}
 
 {% block redirect %}
-	/
+    /
 {% endblock %}
 
 {% block name_redirect_page %}
-	Очки, набранные командами
+    Очки, набранные командами
 {% endblock %}
-	
-{% block content %}	
-	
-	<div id="overlay" class="overlayclass">
-			
-		<table width="100%" text-align="center">
-			<tr>
-				<td COLSPAN="2">
-					<div id="content"></div>
-				</td>
-			</tr>		
-			
-			<tr>
-				<td>
-					<div id="farm" class="frm">
-					<form>
-						<input type="hidden" value="" id="task_id"/>
-						<input type="text" id="flag"/>
-						<input type="button" onclick="sendflag($('#overlay #task_id').val(), $('#overlay #flag').val())" value="Отправить флаг"/>
-					</form>					
-					</div>		
-				</td>
-				<td>
-					<input type="button" value="Закрыть" onclick="closeOverlay()"/>
-				</td>
-			</tr>	
-		</table>
-		
-	</div>	
+
+{% block content %}
+<div id="overlay" class="overlayclass">
+        
+    <table width="100%" text-align="center">
+        <tr>
+            <td COLSPAN="2">
+                <div id="content"></div>
+            </td>
+        </tr>
+        
+        <tr>
+            <td>
+                <div id="farm" class="frm">
+                <form method="post" enctype="multipart/form-data">
+                    <input type="hidden" value="" id="task_id"/>
+                    <input type="text" id="flag"/>
+                    <input type="button" onclick="sendflag($('#overlay #task_id').val(), $('#overlay #flag').val())" value="Отправить флаг"/>
+                </form>
+                </div>
+            </td>
+            <td>
+                <input type="button" value="Закрыть" onclick="closeOverlay()"/>
+            </td>
+        </tr>
+    </table>
+    
+</div>
 <table border="5" cellpadding="0" cellspacing="1" id="hor-zebra">
-	{% for c in data %}
-	<tr>
-		<td class="name">
-		{{c.cat.name}}
-		</td>
-		{% for tdict in c.tasks %}
-		{% if tdict.issolved %}
-		<td class="solved">
-							<a href="#" onclick="checktask({{tdict.task.id}})">{{tdict.task}}</a>
-		{% else %}
-		<td class="tasks">
-							{% if access %}
-								<a href="#" onclick="checktask({{tdict.task.id}})">{{tdict.task}}</a>
-							{% else %}
-								{{tdict.task}}
-							{% endif %}
-		{% endif%}
-		</td>
-		{% endfor %}
-	</tr>
-	{% endfor %}
+    {% for c in data %}
+    <tr>
+        <td class="name">
+        {{c.cat.name}}
+        </td>
+        {% for tdict in c.tasks %}
+        {% if tdict.issolved %}
+        <td class="solved">
+                            <a href="#" onclick="checktask({{tdict.task.id}})">{{tdict.task}}</a>
+        {% else %}
+        <td class="tasks">
+                            {% if access %}
+                                <a href="#" onclick="checktask({{tdict.task.id}})">{{tdict.task}}</a>
+                            {% else %}
+                                {{tdict.task}}
+                            {% endif %}
+        {% endif%}
+        </td>
+        {% endfor %}
+    </tr>
+    {% endfor %}
 </table>
 {% endblock %}
 {% block scripts %}
@@ -73,62 +72,61 @@
 <script type="text/javascript">
 function refreshgrid()
 {
-	{% if access %}
-	updategrid({{team.id}}, true);
-	{% else %}
-	updategrid({{team.id}}, false);
-	{% endif%}
+    {% if access %}
+    updategrid({{team.id}}, true);
+    {% else %}
+    updategrid({{team.id}}, false);
+    {% endif%}
 }
 setInterval(refreshgrid, 1000);
 
 function checktask(task_id)
 {
-	$.ajax({
-		url: '/tsk',
-		data: {'task_id' : task_id }
-		})
-  		.done(function(data) { 
-  			$('#overlay #content').empty();
-  			$('#overlay #content').append(data.task);
-  			$('#overlay #task_id').val(task_id);
-  			$('#overlay #flag').val("");
-  			if(!data.status)
-				$('#overlay #farm').addClass('visible');
-			else
-				$('#overlay #farm').removeClass('visible');
-			$('#overlay').addClass('visible');
-  			})
-    	.fail(function() { 
-    		$('#overlay').removeClass('visible');
-    		alert("error");
-    		});
+    $.ajax({
+        url: '/tsk',
+        data: {'task_id' : task_id }
+        })
+          .done(function(data) { 
+              $('#overlay #content').empty();
+              $('#overlay #content').append(data.task);
+              $('#overlay #task_id').val(task_id);
+              $('#overlay #flag').val("");
+              if(!data.status)
+                $('#overlay #farm').addClass('visible');
+            else
+                $('#overlay #farm').removeClass('visible');
+            $('#overlay').addClass('visible');
+              })
+        .fail(function() { 
+            $('#overlay').removeClass('visible');
+            alert("error");
+            });
 }
 
 function sendflag(task_id, flag)
 {
-	$.ajax({
-		url: '/chk',
-		data: {'task_id' : task_id, 'flag' : flag }
-	})
-  	.done(function(data) {
-  		
-		if(data.status)
-		{
-			$('#overlay #flag').val('Флаг принят');
-		} else {
-			$('#overlay #flag').val('Флаг не принят');
-		}
-		//$('#overlay #farm').removeClass('visible');
-  	})
+    $.ajax({
+        url: '/chk',
+        data: {'task_id' : task_id, 'flag' : flag }
+    })
+      .done(function(data) {
+        if(data.status)
+        {
+            $('#overlay #flag').val('Флаг принят');
+        } else {
+            $('#overlay #flag').val('Флаг не принят');
+        }
+        //$('#overlay #farm').removeClass('visible');
+      })
     .fail(function() {
-    	alert("error");
+        alert("error");
     });
 }
 
 function closeOverlay()
 {
-	$('#overlay').removeClass('visible');
-	$('#overlay #flag').val("");
+    $('#overlay').removeClass('visible');
+    $('#overlay #flag').val("");
 }
 </script>
-{% endblock %} 	
+{% endblock %}

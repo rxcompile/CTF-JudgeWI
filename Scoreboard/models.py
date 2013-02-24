@@ -8,21 +8,21 @@ from django.db import models
 class TeamMember(models.Model):
     name = models.CharField(u'ФИО', max_length=50)
     nick = models.CharField(u'Никнейм', max_length=30, blank=True)
-    
+
     class Meta:
         verbose_name_plural = u"Участники"
         verbose_name = u"Участник"
-    
+
     def __unicode__(self):
         return self.name
-    
+
 class Team(models.Model):
     name = models.CharField(u'Название команды', max_length=50)
     image = models.URLField(u'Иконка', blank=True)
     subnet = models.CharField(u'Подсеть', max_length=18)
-    
+
     members = models.ManyToManyField(TeamMember)
-    
+
     class Meta:
         verbose_name_plural = u"Команды"
         verbose_name = u"Команда"
@@ -34,7 +34,7 @@ class Team(models.Model):
         
     def __unicode__(self):
         return self.name
-    
+
 class Category(models.Model):
     name = models.CharField(u'Название', max_length=40)
     tip = models.TextField(u'Подсказка', blank=True)
@@ -59,25 +59,26 @@ class Task(models.Model):
     description = models.TextField(u'Описание')
     score = models.PositiveSmallIntegerField(u'Очки',choices=SCORE_CHOICES)
     visible = models.BooleanField(u'Открыт')
-    
+    isFile = models.BooleanField(u'Загрузка файла')
+
     class Meta:
         verbose_name_plural = u"Задания"
         verbose_name = u"Задание"
-    
+
     def __unicode__(self):
         return u'%s-%s' % (self.category, self.score)
-        
+
 class Score(models.Model):
     team = models.ForeignKey(Team)
     task = models.ForeignKey(Task,related_name='task')
-    
+
     class Meta:
         verbose_name_plural = u"Набранные очки"
         verbose_name = u"Набрано"
-    
+
     def __unicode__(self):
         return u'%s scores %s from %s' % (self.team, self.task.score, self.task)
-        
+
 class FlagLog(models.Model):
     team = models.ForeignKey(Team)
     flag = models.CharField(u'Флаг',max_length=20)
@@ -85,11 +86,10 @@ class FlagLog(models.Model):
     class Meta:
         verbose_name_plural = u"Отправленные флаги"
         verbose_name = u"Отправленный флаг"
-    
+
     def __unicode__(self):
         return u'%s send %s' % (self.team, self.flag)
-    
-    
+
 class Flag(models.Model):
     task = models.ForeignKey(Task)
     flag = models.CharField(u'Флаг',max_length=20)
@@ -100,4 +100,3 @@ class Flag(models.Model):
     
     def __unicode__(self):
         return u'%s %s' % (self.flag, self.task)
-    

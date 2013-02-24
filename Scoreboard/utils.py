@@ -36,9 +36,10 @@ def check_flag(team, task, sended_flag):
     log.save()
     try:
         if not isSolveTask(team,task):
-            Flag.objects.get(flag=sended_flag, task=task)
-            score = Score.objects.create(team=team, task=task)
-            score.save()
-            return True
+            if not task.isFile:
+                Flag.objects.get(flag=sended_flag, task=task)
+                score = Score.objects.create(team=team, task=task)
+                score.save()
+        return True
     except:
         return False

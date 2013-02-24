@@ -10,7 +10,7 @@ from Scoreboard.models import *
 #Ajax stuff
 def tasks(request):
     #if not request.is_ajax():
-    #	return HttpResponseNotAllowed('Ajax')
+    #    return HttpResponseNotAllowed('Ajax')
     team_id = request.GET.get('team_id')
     team = Team.objects.get(id=team_id)
     categories = Category.objects.all()
@@ -44,7 +44,7 @@ def task_info(request):
     task_id = request.GET.get('task_id')
     team = get_team(get_ip(request))
     task = Task.objects.get(id=task_id)
-    jsonDict = {'task' : task.description, 'score' : task.score, 'status' : isSolveTask(team,task) }
+    jsonDict = {'task' : task.description, 'score' : task.score, 'status' : isSolveTask(team,task), 'isFile' : task.isFile }
     return HttpResponse( json.dumps( jsonDict ), mimetype="application/json" )
 
 #Teams with scores
@@ -57,8 +57,8 @@ def scores(request):
     categories = Category.objects.all()
     scores = Score.objects.select_related()
     data = [{'team' : t.name,
-			 'team_id' : t.id,
-			 'team_image' : t.image,
+             'team_id' : t.id,
+             'team_image' : t.image,
              'total_score' : int( scores.filter(team=t).aggregate(sum=Sum('task__score'))['sum'] or 0 ),
              'category' : [ int( scores.filter(team=t, task__isnull=False, task__category=c).aggregate(s=Sum('task__score'))['s'] or 0 )
                              for c in categories]
@@ -69,8 +69,8 @@ def scores(request):
     for (i, d) in enumerate(data):
         d['place'] = i+1
 
-	response = HttpResponse(json.dumps(data), mimetype="application/json")
-	response['Access-Control-Allow-Origin'] = '*'
+    response = HttpResponse(json.dumps(data), mimetype="application/json")
+    response['Access-Control-Allow-Origin'] = '*'
     return response
 
 def scoresExt(request):
@@ -80,8 +80,8 @@ def scoresExt(request):
     categories = Category.objects.all()
     scores = Score.objects.select_related()
     data = [{'team' : t.name,
-			 'team_id' : t.id,
-			 'team_image' : t.image,
+             'team_id' : t.id,
+             'team_image' : t.image,
              'total_score' : int( scores.filter(team=t).aggregate(sum=Sum('task__score'))['sum'] or 0 ),
              'category' : [ int( scores.filter(team=t, task__isnull=False, task__category=c).aggregate(s=Sum('task__score'))['s'] or 0 )
                              for c in categories]
@@ -92,8 +92,8 @@ def scoresExt(request):
     for (i, d) in enumerate(data):
         d['place'] = i+1
 
-	response = HttpResponse(request.GET['callback'] + '(' + json.dumps(data) + ')', mimetype="application/json")
-	response['Access-Control-Allow-Origin'] = '*'
+    response = HttpResponse(request.GET['callback'] + '(' + json.dumps(data) + ')', mimetype="application/json")
+    response['Access-Control-Allow-Origin'] = '*'
     return response
 
 #Lightweight return of "teamid - totalscore - place" data
@@ -138,7 +138,7 @@ def scoreboard(request):
 
     return render_to_response('scoreboard.html',
                               {'team' : team, 
-							   'mteam' : team,
+                               'mteam' : team,
                                'user_address' : client_ip,
                                'data' : data,
                                'categories' : categories
@@ -178,12 +178,11 @@ def team(request, team_id):
 
     return render_to_response('team.html',
                               {'team' : team, 
-							   'mteam' : my_team,
+                               'mteam' : my_team,
                                'teams' : dteams,
                                'data' : data,
                                'user_address' : get_ip(request),
                                'access' : access_tasks
-
                                },
                                mimetype="application/xhtml+xml")
 
