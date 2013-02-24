@@ -127,12 +127,6 @@ def team(request, team_id):
         "maxfilesize": 10 * 2 ** 20, # 10 Mb
         # the minimum file size (must be in bytes)
         "minfilesize": 100 * 2 ** 10, # 100 Kb
-        # the file types which are going to be allowed for upload
-        #   must be a mimetype
-        "acceptedformats": (
-            "image/jpeg",
-            "image/png",
-            )
     }
     # load the template
     t = loader.get_template("team.html")
