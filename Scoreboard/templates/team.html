@@ -21,15 +21,18 @@
         <tr>
             <td>
                 <div id="sendform" class="frm">
-                <form action="/chk" method="post" 
-                    {% if form.is_multipart %}enctype="multipart/form-data"{% endif %}>
+                <form action="/chk" method="post" enctype="multipart/form-data">
                     {% csrf_token %}
-                    <input type="hidden" value="" id="task_id"/>
-                    <input type="text" id="flag"/>
-                    <input type="file" id="file" style="display:none;"/>
+                    <input type="hidden" value="" name="task_id"/>
+                    <input type="text" name="flag"/>
+                    <input type="file" name="file" style="display:none;"/>
                     <!--<input type="button" onclick="sendflag($('#overlay #task_id').val(), $('#overlay #flag').val())" value="Отправить флаг"/> -->
                     <button type="submit">Отправить</button>
                 </form>
+                <div id="fileupload" class="fileupload-content" style="display:none;">
+                    <table class="files"></table>
+                    <div class="fileupload-progressbar"></div>
+                </div>
                 </div>
             </td>
             <td>
@@ -105,11 +108,11 @@
         });
 
         // Load existing files
-        $.getJSON($('#sendform form').prop('action'), function (files) {
+        $.getJSON($('#sendform form').prop('action'), function (file) {
             var fu = $('#sendform').data('fileupload');
-            fu._adjustMaxNumberOfFiles(-files.length);
-            fu._renderDownload(files)
-                    .appendTo($('#sendform .files'))
+            fu._adjustMaxNumberOfFiles(-file.length);
+            fu._renderDownload(file)
+                    .appendTo($('#sendform .file'))
                     .fadeIn(function () {
                         // Fix for IE7 and lower:
                         $(this).show();
@@ -118,7 +121,7 @@
 
         // Open download dialogs via iframes,
         // to prevent aborting current uploads
-        $('#sendform .files a:not([target^=_blank])').live('click', function (e) {
+        $('#sendform .file a:not([target^=_blank])').live('click', function (e) {
             e.preventDefault();
             $('<iframe style="display:none;"></iframe>')
                     .prop('src', this.href)

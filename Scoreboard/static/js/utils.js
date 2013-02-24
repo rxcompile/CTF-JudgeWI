@@ -88,16 +88,19 @@ function checktask(task_id) {
     .done(function(data) { 
         $('#overlay #content').empty();
         $('#overlay #content').append(data.task);
-        $('#overlay #task_id').val(task_id);
-        $('#overlay #flag').val("");
+        $('#overlay .task_id').val(task_id);
+        $('#overlay .flag').val("");
         if(!data.status)
             $('#sendform').addClass('visible');
         else
             $('#sendform').removeClass('visible');
-        if(data.isFile)
-            $('#sendform #file').addClass('visible');
-        else
-            $('#sendform #file').removeClass('visible');
+        if(data.isFile) {
+            $('#sendform .file').addClass('visible');
+            $('#sendform #fileupload').addClass('visible');
+        } else {
+            $('#sendform .file').removeClass('visible');
+            $('#sendform #fileupload').removeClass('visible');
+        }
         $('#overlay').addClass('visible');
     })
     .fail(function() { 
