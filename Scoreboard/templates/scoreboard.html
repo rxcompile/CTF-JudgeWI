@@ -4,11 +4,12 @@
 
 {% block title %}Очки, набранные командами{% endblock %}
 
-{% block redirect %}{% url TeamPage mteam.id %}{% endblock %}
+{% block redirect %}{% url MyTeamPage %}{% endblock %}
 
 {% block name_redirect_page %}Задания для команды {{mteam.name}}{% endblock %}
 
 {% block scripts %}
+<script src="/static/js/jquery-1.8.2.min.js"></script>
 <script type="text/javascript" src="/static/js/utils.js"></script>
 <script type="text/javascript">
 setInterval(updatescores, 5000);
@@ -42,7 +43,7 @@ setInterval(updatescores, 5000);
             {% endif %}
                 <td>{{t.place}}</td>
                 <td><a href="{% url TeamPage team_id=t.team.id %}">{{ t.team.name }}</a></td>
-                <td class ="logo"><img src="{{t.team.image}}" class="images"/></td>
+                <td class ="logo"><img src="{{t.team.image.url}}" class="images"/></td>
                 {% for value in t.category %}
                     <td>{{ value }}</td>
                 {% endfor %}

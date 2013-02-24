@@ -18,11 +18,17 @@ class TeamMember(models.Model):
         return self.name
 
 class Team(models.Model):
+    def GetFilename(instance,filename):
+        # used to generate random unique id
+        import uuid
+        uid = uuid.uuid4()
+        return os.path.join('team-icons', str(uid)) + ".jpg"
+
     name = models.CharField(u'Название команды', max_length=50)
-    image = models.URLField(u'Иконка', blank=True)
+    image = models.ImageField(u'Иконка', blank=True, upload_to=GetFilename)
     subnet = models.CharField(u'Подсеть', max_length=18)
 
-    members = models.ManyToManyField(TeamMember)
+    members = models.ManyToManyField(TeamMember, blank=True)
 
     class Meta:
         verbose_name_plural = u"Команды"
@@ -82,12 +88,16 @@ class Score(models.Model):
 
 class FlagLog(models.Model):
     def GetFilename(instance,filename):
-        return os.path.join('uploads', str(instance.team), str(instance.task), filename)
+        # used to generate random unique id
+        import uuid
+        uid = uuid.uuid4()
+        return os.path.join('log-uploads', str(instance.team), str(instance.task), str(uid)) + ".jpg"
 
     team = models.ForeignKey(Team)
     task = models.ForeignKey(Task)
     flag = models.CharField(u'Отправленный флаг', max_length=20)
     file = models.FileField(u'Файл', upload_to=GetFilename)
+    date = models.DateTimeField(u'Отправлен', auto_now_add=True)
 
     class Meta:
         verbose_name_plural = u"Отправленные флаги"

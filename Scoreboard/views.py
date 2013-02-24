@@ -1,7 +1,7 @@
 # coding=utf-8
 from django.shortcuts import render_to_response
 from django.http import HttpResponse, HttpResponseNotAllowed,\
-    HttpResponseNotFound
+    HttpResponseNotFound, HttpResponseRedirect
 from django.db.models.aggregates import Sum
 # for generating json
 import django.utils.simplejson as json
@@ -47,7 +47,7 @@ def scores(request):
     scores = Score.objects.select_related()
     data = [{'team' : t.name,
              'team_id' : t.id,
-             'team_image' : t.image,
+             'team_image' : t.image.url,
              'total_score' : int( scores.filter(team=t).aggregate(sum=Sum('task__score'))['sum'] or 0 ),
              'category' : [ int( scores.filter(team=t, task__isnull=False, task__category=c).aggregate(s=Sum('task__score'))['s'] or 0 )
                              for c in categories]
@@ -126,7 +126,7 @@ def team(request, team_id):
         # the maximum file size (must be in bytes)
         "maxfilesize": 10 * 2 ** 20, # 10 Mb
         # the minimum file size (must be in bytes)
-        "minfilesize": 100 * 2 ** 10, # 100 Kb
+        "minfilesize": 1 * 2 ** 10, # 1 Kb
     }
     # load the template
     t = loader.get_template("team.html")
@@ -168,8 +168,9 @@ def send_check_flag(request):
     log = FlagLog.objects.create(flag=sended_flag, team=team, task=task)
     if task.isFile:
         if not request.FILES:
-            return HttpResponseBadRequest('Must upload a file')
-        log.file = request.Files['file']
+            pass
+            #return HttpResponseBadRequest('Must upload a file')
+        log.file = request.FILES['file']
     log.save()
     try:
         if not isSolveTask(team,task):
@@ -195,15 +196,16 @@ def task_info(request):
     task_id = request.GET.get('task_id')
     team = get_team(get_ip(request))
     task = Task.objects.get(id=task_id)
-    jsonDict = {'task' : task.description, 'score' : task.score, 'status' : isSolveTask(team,task), 'isFile' : task.isFile }
+    jsonDict = {'task' : task.description, 'score' : task.score, 'status' : isSolveTask(team,task), 'isFile' : task.isFile == True }
     return HttpResponse( json.dumps( jsonDict ), mimetype="application/json" )
 
 #Try to show my team only
 def myteam(request):
     client_ip = get_ip(request)
-    team = get_team(client_ip)
-
-    return team(request, team.id)
+    mteam = get_team(client_ip)
+    if not mteam:
+        return HttpResponseRedirect("/")
+    return team(request, mteam.id)
 
 def foreign_scoreboard(request):
     teams = Team.objects.all()

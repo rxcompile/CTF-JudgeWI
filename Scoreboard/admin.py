@@ -19,10 +19,14 @@ class ScoreAdmin(admin.ModelAdmin):
 class FlagAdmin(admin.ModelAdmin):
     list_display = ('task','flag')
     
+class FlagLogAdmin(admin.ModelAdmin):
+    list_display = ('__unicode__', 'task', 'team', 'file')
+    list_filter = ('task', 'team', 'task__isFile')
+    
 admin.site.register(Team,TeamAdmin)
 admin.site.register(Category)
 admin.site.register(Task)
 admin.site.register(Score,ScoreAdmin)
 admin.site.register(Flag,FlagAdmin)
-admin.site.register(FlagLog)
+admin.site.register(FlagLog,FlagLogAdmin)
 admin.site.register(TeamMember,TeamMemberAdmin)

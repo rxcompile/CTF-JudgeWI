@@ -14,29 +14,25 @@
 <div id="overlay" class="overlayclass">
     <table width="100%" text-align="center">
         <tr>
-            <td COLSPAN="2">
+            <td>
                 <div id="content"></div>
+            </td>
+            <td style="text-align: right;">
+                <input type="button" value="X" onclick="closeOverlay()"/>
             </td>
         </tr>
         <tr>
-            <td>
-                <div id="sendform" class="frm">
+            <td COLSPAN="2">
+                <div id="sendform" class="hidden">
                 <form action="/chk" method="post" enctype="multipart/form-data">
                     {% csrf_token %}
-                    <input type="hidden" value="" name="task_id"/>
-                    <input type="text" name="flag"/>
-                    <input type="file" name="file" style="display:none;"/>
-                    <!--<input type="button" onclick="sendflag($('#overlay #task_id').val(), $('#overlay #flag').val())" value="Отправить флаг"/> -->
-                    <button type="submit">Отправить</button>
+                    <input type="hidden" value="" name="task_id" id="task_id"/>
+                    <input type="text" name="flag" id="flag" class="hidden"/>
+                    <input type="file" name="file" id="fileupload" class="hidden"/>
+                    <input type="submit" value="Отправить" />
+                    <iframe id="upload_target" name="upload_target" src="" style="display:none;"></iframe>
                 </form>
-                <div id="fileupload" class="fileupload-content" style="display:none;">
-                    <table class="files"></table>
-                    <div class="fileupload-progressbar"></div>
                 </div>
-                </div>
-            </td>
-            <td>
-                <input type="button" value="Закрыть" onclick="closeOverlay()"/>
             </td>
         </tr>
     </table>
@@ -65,71 +61,7 @@
     </tr>
     {% endfor %}
 </table>
-{% endblock %}
-{% block scripts %}
-<!-- Some CSS for the jQuery uploader UI -->
-<link rel="stylesheet" href="/static/css/jquery-ui.css" id="theme">
-<link href="/static/css/jquery.fileupload-ui.css" rel="stylesheet">
 
-<!-- jQuery Javascript -->
-<script src="/static/js/jquery-1.8.2.min.js"></script>
-<script src="/static/js/jquery-ui.min.js"></script>
-<!-- jQuery Templates -->
-<script src="/static/js/jquery.tmpl.min.js"></script>
-
-<!-- Fixing CSRF in Django for jQuery -->
-<script src="/static/js/jquery_fix_csrf.js"></script>
-
-<!-- jQuery Upload files -->
-<script src="/static/js/jquery.iframe-transport.js"></script>
-<script src="/static/js/jquery.fileupload.js"></script>
-<script src="/static/js/jquery.fileupload-ui.js"></script>
-
-<!-- Form logic scripts -->
-<script type="text/javascript" src="/static/js/utils.js"></script>
-
-<!-- File upload stuff -->
-<script type="text/javascript">
-    $(function() {
-        'use strict';
-
-        // Initialize the jQuery File Upload widget
-        // For a complete option reference go to
-        // https://github.com/blueimp/jQuery-File-Upload
-        $('#sendform').fileupload({
-            // this formData is neccessary to pass the csrf and pass uid to django
-            formData: [
-                { name: "uid", value: "{{ uid }}"},
-                { name: "csrfmiddlewaretoken", value: "{{ csrf_token }}"}
-            ],
-            maxFileSize: {{ maxfilesize }},
-            minFileSize: {{ minfilesize }},
-            sequentialUploads: true
-        });
-
-        // Load existing files
-        $.getJSON($('#sendform form').prop('action'), function (file) {
-            var fu = $('#sendform').data('fileupload');
-            fu._adjustMaxNumberOfFiles(-file.length);
-            fu._renderDownload(file)
-                    .appendTo($('#sendform .file'))
-                    .fadeIn(function () {
-                        // Fix for IE7 and lower:
-                        $(this).show();
-                    });
-        });
-
-        // Open download dialogs via iframes,
-        // to prevent aborting current uploads
-        $('#sendform .file a:not([target^=_blank])').live('click', function (e) {
-            e.preventDefault();
-            $('<iframe style="display:none;"></iframe>')
-                    .prop('src', this.href)
-                    .appendTo('body');
-        });
-
-    });
-</script>
 
 <script id="template-upload" type="text/x-jquery-tmpl">
     <tr class="template-upload{{ open_tv }}if error{{ close_tv }} ui-state-error{{ open_tv }}/if{{ close_tv }}">
@@ -184,7 +116,7 @@
         {{ open_tv }}else{{ close_tv }}
         <td class="preview">
             {{ open_tv }}if thumbnail_url{{ close_tv }}
-            <a href="${url}" target="_blank"><img src="${thumbnail_url}"/></a>
+            <a href="${url}" target="_blank"><img src="${thumbnail_url}"></a>
             {{ open_tv }}/if{{ close_tv }}
         </td>
         <td class="name">
@@ -199,8 +131,31 @@
         </td>
     </tr>
 </script>
+{% endblock %}
+{% block scripts %}
+<!-- Some CSS for the jQuery uploader UI -->
+<link rel="stylesheet" href="/static/css/jquery-ui.css" id="theme">
+<link href="/static/css/jquery.fileupload-ui.css" rel="stylesheet">
+
+<!-- jQuery Javascript -->
+<script src="/static/js/jquery-1.8.2.min.js"></script>
+<script src="/static/js/jquery-ui.min.js"></script>
+<!-- jQuery Templates -->
+<script src="/static/js/jquery.tmpl.min.js"></script>
+
+<!-- Fixing CSRF in Django for jQuery -->
+<script src="/static/js/jquery_fix_csrf.js"></script>
+
+<!-- jQuery Upload files -->
+<script src="/static/js/jquery.iframe-transport.js"></script>
+<script src="/static/js/jquery.fileupload.js"></script>
+<script src="/static/js/jquery.fileupload-ui.js"></script>
+
+<!-- Form logic scripts -->
+<script type="text/javascript" src="/static/js/utils.js"></script>
 
 <script type="text/javascript">
+
 function refreshgrid() {
     {% if access %}
     updategrid({{team.id}}, true);
@@ -208,6 +163,26 @@ function refreshgrid() {
     updategrid({{team.id}}, false);
     {% endif%}
 }
-setInterval(refreshgrid, 1000);
+
+function init() {
+    document.getElementById('sendform').onsubmit = function() {
+        document.getElementById('sendform').target = 'upload_target'; //'upload_target' is the name of the iframe
+    }
+    document.getElementById("upload_target").onload = uploadDone; //This function should be called when the iframe has compleated loading
+			// That will happen when the file is completely uploaded and the server has returned the data we need.
+			
+    //setInterval(refreshgrid, 1000);
+}
+function uploadDone() { //Function will be called when iframe is loaded
+	var ret = frames['upload_target'].document.getElementsByTagName("body")[0].innerHTML;
+	var data = eval("("+ret+")"); //Parse JSON // Read the below explanations before passing judgment on me
+	
+	if(data.status)
+            $('#overlay #flag').val('Флаг принят');
+        else
+            $('#overlay #flag').val('Флаг не принят');
+        //$('#overlay #farm').removeClass('visible');
+}
+window.onload=init;
 </script>
 {% endblock %}

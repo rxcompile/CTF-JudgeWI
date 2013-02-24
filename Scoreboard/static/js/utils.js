@@ -88,18 +88,18 @@ function checktask(task_id) {
     .done(function(data) { 
         $('#overlay #content').empty();
         $('#overlay #content').append(data.task);
-        $('#overlay .task_id').val(task_id);
-        $('#overlay .flag').val("");
+        $('#overlay #task_id').val(task_id);
+        $('#overlay #flag').val("");
         if(!data.status)
-            $('#sendform').addClass('visible');
+            $('#sendform').removeClass('hidden');
         else
-            $('#sendform').removeClass('visible');
-        if(data.isFile) {
-            $('#sendform .file').addClass('visible');
-            $('#sendform #fileupload').addClass('visible');
+            $('#sendform').addClass('hidden');
+        if(data.isFile != true) {
+            $('#sendform #fileupload').addClass('hidden');
+            $('#sendform #flag').removeClass('hidden');
         } else {
-            $('#sendform .file').removeClass('visible');
-            $('#sendform #fileupload').removeClass('visible');
+            $('#sendform #fileupload').removeClass('hidden');
+            $('#sendform #flag').addClass('hidden');
         }
         $('#overlay').addClass('visible');
     })
@@ -112,6 +112,7 @@ function checktask(task_id) {
 function sendflag(task_id, flag) {
     $.ajax({
         url: '/chk',
+        type: 'POST',
         data: {'task_id' : task_id, 'flag' : flag }
     })
     .done(function(data) {

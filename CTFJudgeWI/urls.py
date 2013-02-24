@@ -2,6 +2,7 @@ from django.conf.urls import *
 
 # Uncomment the next two lines to enable the admin:
 from django.contrib import admin
+from django.conf import settings
 admin.autodiscover()
 
 urlpatterns = patterns('',
@@ -17,6 +18,9 @@ urlpatterns = patterns('',
     url(r'^chk$', 'Scoreboard.views.send_check_flag'),
     url(r'^scores$', 'Scoreboard.views.scores'),
     url(r'^tasks$', 'Scoreboard.views.tasks'),
+    url(r'^media/(?P<path>.*)$', 'django.views.static.serve', {
+            'document_root': settings.MEDIA_ROOT,
+        }),
 
     # Uncomment the admin/doc line below to enable admin documentation:
     # url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
