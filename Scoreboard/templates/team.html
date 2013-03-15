@@ -1,13 +1,13 @@
 ﻿{% extends "base.html" %}
 
-{% block hightitle %}Задания команды {{team.name}}{% endblock %}
+{% block hightitle %}Задания  команды {{team.name}}{% endblock %}
 
-{% block title %}Задания команды {{team.name}}{% endblock %}
+{% block title %}Задания  команды {{team.name}}{% endblock %}
 
 {% block redirect %}/{% endblock %}
 
 {% block name_redirect_page %}
-    Очки, набранные командами
+   <span style="padding:0px 2px;">Текущий</span>  <span style="padding:0px 2px;">счет</span>
 {% endblock %}
 
 {% block content %}
@@ -135,7 +135,6 @@
 {% block scripts %}
 <!-- Some CSS for the jQuery uploader UI -->
 <link rel="stylesheet" href="/static/css/jquery-ui.css" id="theme">
-<link href="/static/css/jquery.fileupload-ui.css" rel="stylesheet">
 
 <!-- jQuery Javascript -->
 <script src="/static/js/jquery-1.8.2.min.js"></script>

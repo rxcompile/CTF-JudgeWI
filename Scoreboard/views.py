@@ -1,7 +1,7 @@
 # coding=utf-8
 from django.shortcuts import render_to_response
 from django.http import HttpResponse, HttpResponseNotAllowed,\
-    HttpResponseNotFound, HttpResponseRedirect
+    HttpResponseNotFound, HttpResponseRedirect, HttpResponseBadRequest
 from django.db.models.aggregates import Sum
 # for generating json
 import django.utils.simplejson as json
@@ -167,9 +167,8 @@ def send_check_flag(request):
     #Logging to DB sended flag
     log = FlagLog.objects.create(flag=sended_flag, team=team, task=task)
     if task.isFile:
-        if not request.FILES:
-            pass
-            #return HttpResponseBadRequest('Must upload a file')
+        if not request.FILES or 'file' not in request.FILES.keys():
+            return HttpResponseBadRequest('Must upload a file')
         log.file = request.FILES['file']
     log.save()
     try:

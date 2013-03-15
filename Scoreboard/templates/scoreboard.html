@@ -1,12 +1,12 @@
 ﻿{% extends "base.html" %}
 
-{% block hightitle %}Очки, набранные командами{% endblock %}
+{% block hightitle %}Текущий счет{% endblock %}
 
-{% block title %}Очки, набранные командами{% endblock %}
+{% block title %}Текущий счет{% endblock %}
 
 {% block redirect %}{% url MyTeamPage %}{% endblock %}
 
-{% block name_redirect_page %}Задания для команды {{mteam.name}}{% endblock %}
+{% block name_redirect_page %}<span style="padding:0px 2px;">Задания</span>  <span style="padding:0px 2px;">для</span>  <span style="padding:0px 2px;">команды</span>  {{mteam.name}}{% endblock %}
 
 {% block scripts %}
 <script src="/static/js/jquery-1.8.2.min.js"></script>

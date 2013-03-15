@@ -22,7 +22,7 @@ class Team(models.Model):
         # used to generate random unique id
         import uuid
         uid = uuid.uuid4()
-        return os.path.join('team-icons', str(uid)) + ".jpg"
+        return os.path.join(u'team-icons', unicode(uid)) + ".jpg"
 
     name = models.CharField(u'Название команды', max_length=50)
     image = models.ImageField(u'Иконка', blank=True, upload_to=GetFilename)
@@ -91,12 +91,12 @@ class FlagLog(models.Model):
         # used to generate random unique id
         import uuid
         uid = uuid.uuid4()
-        return os.path.join('log-uploads', str(instance.team), str(instance.task), str(uid)) + ".jpg"
+        return os.path.join(u'log-uploads', unicode(instance.team), unicode(instance.task), unicode(uid)) + ".jpg"
 
     team = models.ForeignKey(Team)
     task = models.ForeignKey(Task)
     flag = models.CharField(u'Отправленный флаг', max_length=20)
-    file = models.FileField(u'Файл', upload_to=GetFilename)
+    file = models.FileField(u'Файл', upload_to=GetFilename, blank=True)
     date = models.DateTimeField(u'Отправлен', auto_now_add=True)
 
     class Meta:
