@@ -136,10 +136,14 @@ function send_flag() {
 
 function completeHandler(data)
 { 
-    if(data.status) {
+    if(data.status == 1) {
         $('#flag_accept').removeClass('hidden').fadeIn(200).delay(1500).fadeOut(200).queue(function(nxt){$('#overlay').removeClass('visible'); nxt();});
-    } else {
+    } else if(data.status == 0) {
         $('#flag_reject').removeClass('hidden').fadeIn(200).delay(1500).fadeOut(200);
+    } else {
+        $('#flag_timeout #time').empty();
+        $('#flag_timeout #time').append(30 - data.time);
+        $('#flag_timeout').removeClass('hidden').fadeIn(200).delay(1500).fadeOut(200);
     }
 }
 

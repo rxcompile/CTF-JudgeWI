@@ -20,7 +20,7 @@ class FlagAdmin(admin.ModelAdmin):
     list_display = ('task','flag')
     
 class FlagLogAdmin(admin.ModelAdmin):
-    list_display = ('__unicode__', 'task', 'team', 'file')
+    list_display = ('__unicode__', 'task', 'team', 'file', 'date')
     list_filter = ('task', 'team', 'task__isFile')
     
 admin.site.register(Team,TeamAdmin)

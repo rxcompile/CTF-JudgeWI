@@ -17,6 +17,9 @@ import os
 from Scoreboard.utils import *
 from Scoreboard.models import *
 
+import datetime
+from django.utils import timezone
+
 #Ajax stuff
 def tasks(request):
     #if not request.is_ajax():
@@ -156,7 +159,15 @@ def send_check_flag(request):
 
     task = Task.objects.get(id=task_id)
     
-    result = False
+    result = 0
+    try:
+        lastlog = FlagLog.objects.filter(team=team,task=task).latest('date')
+        diff = (timezone.now() - lastlog.date).seconds
+        if diff < 30:
+            result = 2
+            return HttpResponse(json.dumps({ "status": result, "time": diff}), mimetype="application/json")
+    except:
+        pass
     #Logging to DB sended flag
     log = FlagLog.objects.create(flag=sended_flag, team=team, task=task)
     if task.isFile:
@@ -164,6 +175,7 @@ def send_check_flag(request):
             return HttpResponseBadRequest('Must upload a file')
         log.file = request.FILES['file']
     log.save()
+    
     try:
         if not isSolveTask(team,task):
             #Special logic for files => no auto scores
@@ -174,12 +186,11 @@ def send_check_flag(request):
                 #Increment scores for team
                 score = Score.objects.create(team=team, task=task)
                 score.save()
-        result = True
+        result = 1
     except:
-        result = False
-
-    jsonDict = json.dumps({ "status": result })
-    return HttpResponse(jsonDict, mimetype="application/json")
+        result = 0
+    
+    return HttpResponse(json.dumps({ "status": result, "time": diff }), mimetype="application/json")
 
 #Retrieve info for task
 def task_info(request):
