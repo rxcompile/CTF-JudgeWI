@@ -137,13 +137,6 @@ def team(request, team_id):
         'data' : data,
         'user_address' : get_ip(request),
         'access' : access_tasks,
-        # these two are necessary to generate the jQuery templates
-        # they have to be included here since they conflict with django template system
-        "open_tv": u'{{',
-        "close_tv": u'}}',
-        # some of the parameters to be checked by javascript
-        "maxfilesize": options["maxfilesize"],
-        "minfilesize": options["minfilesize"],
         })
     # add csrf token value to the dictionary
     c.update(csrf(request))

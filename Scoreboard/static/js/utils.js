@@ -135,13 +135,12 @@ function send_flag() {
 }
 
 function completeHandler(data)
-{
-    var flag = $('#overlay #flag').val(); 
-    if(data.status)
-        $('#overlay #flag').val('Флаг принят').delay(1500).queue(function(nxt){$(this).val(flag); nxt();});
-    else
-        $('#overlay #flag').val('Флаг не принят').delay(1500).queue(function(nxt){$(this).val(flag); nxt();});
-    //$('#overlay #farm').removeClass('visible');
+{ 
+    if(data.status) {
+        $('#flag_accept').removeClass('hidden').fadeIn(200).delay(1500).fadeOut(200).queue(function(nxt){$('#overlay').removeClass('visible'); nxt();});
+    } else {
+        $('#flag_reject').removeClass('hidden').fadeIn(200).delay(1500).fadeOut(200);
+    }
 }
 
 function closeOverlay() {

@@ -30,6 +30,8 @@
                     <input type="file" name="file" id="fileupload" class="hidden"/>
                     <input type="button" value="Отправить" onclick="send_flag()"/>
                 </form>
+                <div id="flag_accept" class="hidden" style="background: green;">Флаг принят</div>
+                <div id="flag_reject" class="hidden" style="background: red;">Флаг не принят</div>
             </td>
         </tr>
     </table>
@@ -84,5 +86,6 @@ function refreshgrid() {
     updategrid({{team.id}}, false);
     {% endif%}
 }
+setInterval(refreshgrid, 5000);
 </script>
 {% endblock %}
