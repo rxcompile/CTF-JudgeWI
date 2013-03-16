@@ -109,22 +109,39 @@ function checktask(task_id) {
     });
 }
 
-function sendflag(task_id, flag) {
+function send_flag() {
+    var formData = new FormData($('#sendform')[0]);
     $.ajax({
-        url: '/chk',
+        url: '/chk',  //server script to process data
         type: 'POST',
-        data: {'task_id' : task_id, 'flag' : flag }
-    })
-    .done(function(data) {
-        if(data.status)
-            $('#overlay #flag').val('Флаг принят');
-        else
-            $('#overlay #flag').val('Флаг не принят');
-        //$('#overlay #farm').removeClass('visible');
-    })
-    .fail(function() {
-        alert("error");
+        xhr: function() {  // custom xhr
+            myXhr = $.ajaxSettings.xhr();
+            if(myXhr.upload){ // check if upload property exists
+                //myXhr.upload.addEventListener('progress',progressHandlingFunction, false); // for handling the progress of the upload
+            }
+            return myXhr;
+        },
+        //Ajax events
+        //beforeSend: beforeSendHandler,
+        success: completeHandler,
+        //error: errorHandler,
+        // Form data
+        data: formData,
+        //Options to tell JQuery not to process data or worry about content-type
+        cache: false,
+        contentType: false,
+        processData: false
     });
+}
+
+function completeHandler(data)
+{
+    var flag = $('#overlay #flag').val(); 
+    if(data.status)
+        $('#overlay #flag').val('Р¤Р»Р°Рі РїСЂРёРЅСЏС‚').delay(1500).queue(function(nxt){$(this).val(flag); nxt();});
+    else
+        $('#overlay #flag').val('Р¤Р»Р°Рі РЅРµ РїСЂРёРЅСЏС‚').delay(1500).queue(function(nxt){$(this).val(flag); nxt();});
+    //$('#overlay #farm').removeClass('visible');
 }
 
 function closeOverlay() {

@@ -43,7 +43,7 @@ setInterval(updatescores, 5000);
             {% endif %}
                 <td>{{t.place}}</td>
                 <td><a href="{% url TeamPage team_id=t.team.id %}">{{ t.team.name }}</a></td>
-                <td class ="logo"><img src="{{t.team.image.url}}" class="images"/></td>
+                <td class ="logo"><img src="{% if t.team.image %}{{t.team.image.url}}{% endif %}" class="images"/></td>
                 {% for value in t.category %}
                     <td>{{ value }}</td>
                 {% endfor %}

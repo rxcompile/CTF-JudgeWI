@@ -23,20 +23,16 @@
         </tr>
         <tr>
             <td COLSPAN="2">
-                <div id="sendform" class="hidden">
-                <form action="/chk" method="post" enctype="multipart/form-data">
+                <form id="sendform" class="hidden" enctype="multipart/form-data">
                     {% csrf_token %}
                     <input type="hidden" value="" name="task_id" id="task_id"/>
                     <input type="text" name="flag" id="flag" class="hidden"/>
                     <input type="file" name="file" id="fileupload" class="hidden"/>
-                    <input type="submit" value="Отправить" />
-                    <iframe id="upload_target" name="upload_target" src="" style="display:none;"></iframe>
+                    <input type="button" value="Отправить" onclick="send_flag()"/>
                 </form>
-                </div>
             </td>
         </tr>
     </table>
-    
 </div>
 <table border="5" cellpadding="0" cellspacing="1" id="hor-zebra">
     {% for c in data %}
@@ -62,75 +58,6 @@
     {% endfor %}
 </table>
 
-
-<script id="template-upload" type="text/x-jquery-tmpl">
-    <tr class="template-upload{{ open_tv }}if error{{ close_tv }} ui-state-error{{ open_tv }}/if{{ close_tv }}">
-        <td class="preview"></td>
-        <td class="name">${name}</td>
-        <td class="size">${sizef}</td>
-        {{ open_tv }}if error{{ close_tv }}
-        <td class="error" colspan="2">Error:
-            {{ open_tv }}if error === 'maxFileSize'{{ close_tv }}File is too big
-            {{ open_tv }}else error === 'minFileSize'{{ close_tv }}File is too small
-            {{ open_tv }}else error === 'acceptFileTypes'{{ close_tv }}Filetype not allowed
-            {{ open_tv }}else error === 'maxNumberOfFiles'{{ close_tv }}Max number of files exceeded
-            {{ open_tv }}else{{ close_tv }}${error}
-            {{ open_tv }}/if{{ close_tv }}
-        </td>
-        {{ open_tv }}else{{ close_tv }}
-        <td class="progress">
-            <div></div>
-        </td>
-        <td class="start">
-            <button>Start</button>
-        </td>
-        {{ open_tv }}/if{{ close_tv }}
-        <td class="cancel">
-            <button>Cancel</button>
-        </td>
-    </tr>
-</script>
-<script id="template-download" type="text/x-jquery-tmpl">
-    <tr class="template-download{{ open_tv }}if error{{ close_tv }} ui-state-error{{ open_tv }}/if{{ close_tv }}">
-        {{ open_tv }}if error{{ close_tv }}
-        <td></td>
-        <td class="name">${name}</td>
-        <td class="size">${sizef}</td>
-        <td class="error" colspan="2">Error:
-            {{ open_tv }}if error === 1{{ close_tv }}File exceeds upload_max_filesize (php.ini directive)
-            {{ open_tv }}else error === 2{{ close_tv }}File exceeds MAX_FILE_SIZE (HTML form directive)
-            {{ open_tv }}else error === 3{{ close_tv }}File was only partially uploaded
-            {{ open_tv }}else error === 4{{ close_tv }}No File was uploaded
-            {{ open_tv }}else error === 5{{ close_tv }}Missing a temporary folder
-            {{ open_tv }}else error === 6{{ close_tv }}Failed to write file to disk
-            {{ open_tv }}else error === 7{{ close_tv }}File upload stopped by extension
-            {{ open_tv }}else error === 'maxFileSize'{{ close_tv }}File is too big
-            {{ open_tv }}else error === 'minFileSize'{{ close_tv }}File is too small
-            {{ open_tv }}else error === 'acceptFileTypes'{{ close_tv }}Filetype not allowed
-            {{ open_tv }}else error === 'maxNumberOfFiles'{{ close_tv }}Max number of files exceeded
-            {{ open_tv }}else error === 'uploadedBytes'{{ close_tv }}Uploaded bytes exceed file size
-            {{ open_tv }}else error === 'emptyResult'{{ close_tv }}Empty file upload result
-            {{ open_tv }}else{{ close_tv }}${error}
-            {{ open_tv }}/if{{ close_tv }}
-        </td>
-        {{ open_tv }}else{{ close_tv }}
-        <td class="preview">
-            {{ open_tv }}if thumbnail_url{{ close_tv }}
-            <a href="${url}" target="_blank"><img src="${thumbnail_url}"></a>
-            {{ open_tv }}/if{{ close_tv }}
-        </td>
-        <td class="name">
-            <a href="${url}" {{ open_tv }}if thumbnail_url{{ close_tv }}
-               target="_blank"{{ open_tv }}/if{{ close_tv }}>${name}</a>
-        </td>
-        <td class="size">${sizef}</td>
-        <td colspan="2"></td>
-        {{ open_tv }}/if{{ close_tv }}
-        <td class="delete">
-            <button data-type="${delete_type}" data-url="${delete_url}">Delete</button>
-        </td>
-    </tr>
-</script>
 {% endblock %}
 {% block scripts %}
 <!-- Some CSS for the jQuery uploader UI -->
@@ -145,11 +72,6 @@
 <!-- Fixing CSRF in Django for jQuery -->
 <script src="/static/js/jquery_fix_csrf.js"></script>
 
-<!-- jQuery Upload files -->
-<script src="/static/js/jquery.iframe-transport.js"></script>
-<script src="/static/js/jquery.fileupload.js"></script>
-<script src="/static/js/jquery.fileupload-ui.js"></script>
-
 <!-- Form logic scripts -->
 <script type="text/javascript" src="/static/js/utils.js"></script>
 
@@ -162,26 +84,5 @@ function refreshgrid() {
     updategrid({{team.id}}, false);
     {% endif%}
 }
-
-function init() {
-    document.getElementById('sendform').onsubmit = function() {
-        document.getElementById('sendform').target = 'upload_target'; //'upload_target' is the name of the iframe
-    }
-    document.getElementById("upload_target").onload = uploadDone; //This function should be called when the iframe has compleated loading
-			// That will happen when the file is completely uploaded and the server has returned the data we need.
-			
-    //setInterval(refreshgrid, 1000);
-}
-function uploadDone() { //Function will be called when iframe is loaded
-	var ret = frames['upload_target'].document.getElementsByTagName("body")[0].innerHTML;
-	var data = eval("("+ret+")"); //Parse JSON // Read the below explanations before passing judgment on me
-	
-	if(data.status)
-            $('#overlay #flag').val('Флаг принят');
-        else
-            $('#overlay #flag').val('Флаг не принят');
-        //$('#overlay #farm').removeClass('visible');
-}
-window.onload=init;
 </script>
 {% endblock %}
