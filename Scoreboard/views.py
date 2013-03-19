@@ -34,7 +34,7 @@ def tasks(request):
              'tasks' : [{'task_id': task.id, 
                          'task': str(task), 
                          'issolved' : contains(scores, lambda x: x['task_id'] == task.id)
-                        } for task in tasks.filter(category=cat)]
+                        } for task in tasks.filter(category=cat).order_by('score')]
             } for cat in categories]
 
     return HttpResponse(json.dumps(data), mimetype="application/json")
@@ -119,7 +119,7 @@ def team(request, team_id):
               'tasks' : [{'task_id': task.id, 
                           'task': task, 
                           'issolved' : contains(scores, lambda x: x['task_id'] == task.id)
-                         } for task in tasks.filter(category=cat)]
+                         } for task in tasks.filter(category=cat).order_by('score')]
              } for cat in categories]
 
     # settings for the file upload
