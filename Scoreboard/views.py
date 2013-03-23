@@ -160,6 +160,7 @@ def send_check_flag(request):
     task = Task.objects.get(id=task_id)
     
     result = 0
+    diff = 0
     try:
         lastlog = FlagLog.objects.filter(team=team,task=task).latest('date')
         diff = (timezone.now() - lastlog.date).seconds
