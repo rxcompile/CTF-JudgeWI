@@ -1,7 +1,7 @@
 function updatescores()
 {
 	$.ajax({
-        url: 'http://127.0.0.1:8000/scores',
+        url: 'http://127.0.0.1:8000/scoresExt',
 			dataType: "jsonp",
 			jsonp : "callback",
 			jsonpCallback: "updatescorescallback"
@@ -81,7 +81,7 @@ function generategrid(data, access)
 				ret += "<td class=\"tasks\">";
 			}
 			if(access) {
-				ret += "<a href='#'>" + tdict.task + "</a>";
+				ret += "<a href='#' onclick='checktask(" + tdict.task_id + ")'>" + tdict.task + "</a>";
 			} else {
 				ret += tdict.task;
 			}

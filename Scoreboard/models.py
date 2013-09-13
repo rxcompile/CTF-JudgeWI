@@ -18,11 +18,17 @@ class TeamMember(models.Model):
         return self.name
 
 class Team(models.Model):
+    def GetFilename(instance,filename):
+        # used to generate random unique id
+        import uuid
+        uid = uuid.uuid4()
+        return os.path.join(u'team-icons', unicode(uid)) + ".jpg"
+
     name = models.CharField(u'Название команды', max_length=50)
-    image = models.URLField(u'Иконка', blank=True)
+    image = models.ImageField(u'Иконка', blank=True, upload_to=GetFilename)
     subnet = models.CharField(u'Подсеть', max_length=18)
 
-    members = models.ManyToManyField(TeamMember)
+    members = models.ManyToManyField(TeamMember, blank=True)
 
     class Meta:
         verbose_name_plural = u"Команды"
@@ -81,10 +87,17 @@ class Score(models.Model):
         return u'%s scores %s from %s' % (self.team, self.task.score, self.task)
 
 class FlagLog(models.Model):
-    team = models.ForeignKey(Team,related_name='team')
-    task = models.ForeignKey(Task,related_name='task')
+    def GetFilename(instance,filename):
+        # used to generate random unique id
+        import uuid
+        uid = uuid.uuid4()
+        return os.path.join(u'log-uploads', unicode(instance.team), unicode(instance.task), unicode(uid)) + ".jpg"
+
+    team = models.ForeignKey(Team)
+    task = models.ForeignKey(Task)
     flag = models.CharField(u'Отправленный флаг', max_length=20)
-    file = models.FileField(u'Файл', upload_to=GetFilename)
+    file = models.FileField(u'Файл', upload_to=GetFilename, blank=True)
+    date = models.DateTimeField(u'Отправлен', auto_now_add=True)
 
     class Meta:
         verbose_name_plural = u"Отправленные флаги"
@@ -93,8 +106,6 @@ class FlagLog(models.Model):
     def __unicode__(self):
         return u'%s send %s' % (self.team, self.flag)
 
-    def GetFilename(instance,filename):
-        return os.path.join('uploads', str(instance.team), str(instance.task), filename)
 
 class Flag(models.Model):
     task = models.ForeignKey(Task)

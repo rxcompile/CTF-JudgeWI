@@ -11,9 +11,9 @@
 <div id="menu-wrapper">
     <div id="menu">
         <ul>
-            <li><a href="/">Ваш адрес: {{ user_address }}</a></li>
+            <li><a href="#"><span style="padding:0px 2px;">Ваш</span><span style="padding:0px 2px;"> адрес:</span> {{ user_address }}</a></li>
             {% if team %}
-            <li><a href="{% url team team_id=mteam.id %}">Добро пожаловать, {{ mteam.name }}</a></li>
+            <li><a href="#"><span style="padding:0px 2px;">Добро </span><span style="padding:0px 2px;">пожаловать,</span>  {{ mteam.name }}</a></li>
             {% endif %}
             <li><a href="{% block redirect %} {% endblock %}">{% block name_redirect_page %} {% endblock %}</a></li>
         </ul>
@@ -26,14 +26,16 @@
         <div id="header">
             <div id="logo">
                 <h1><a href="/">IBST.PSU CTF</a></h1>
-                <p>provided by <a href="http://ibst.pnzgu.ru/index.php/vse-ostalnoe/ctrl-pnz">CTRL-PNZ</a></p>                
-                <h2>{% block title %}{% endblock %}</h2>
+                <p>от команды <a href="http://ibst.pnzgu.ru/index.php/vse-ostalnoe/ctrl-pnz">CTRL-PNZ</a></p>                
+
             </div>
         </div>
     </div>
     <!-- end #header -->
 
     <div id="page">
+ <h2 align="center">{% block title %}{% endblock %}</h2>
+
         <!-- #content -->
         <div id="content">
             <div class="post">
